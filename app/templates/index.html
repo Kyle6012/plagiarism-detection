@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section>
+    <h2>Welcome to the Plagiarism Detection System</h2>
+    <p>Detect AI-generated and plagiarized content easily!</p>
+    <a href="{{ url_for('main.upload_file') }}" class="button">Get Started</a>
+</section>
+{% endblock %}

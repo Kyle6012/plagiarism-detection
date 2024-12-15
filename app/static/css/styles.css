@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+header {
+    background-color: #203a43;
+    padding: 10px 20px;
+}
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+nav ul li {
+    margin-left: 20px;
+}
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+button, .button {
+    padding: 10px 20px;
+    background: #05f1de;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+a:hover{
+    color: blue;
+}
