@@ -17,7 +17,7 @@ A powerful plagiarism and AI-generated content detection system that helps ident
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
-- [License](#license)
+
 
 ## Technologies Used
 
@@ -75,8 +75,8 @@ Once the application is running you can interact with the following features:
 
 1. *Home Page*: Welcome message and a button to get started.
 2. *File Upload*: Upload text or image files to be processed for plagiarism detection.
-        . **Text Files**: Supported formats: ``.txt``, ``.docx``, ``.pdf``
-        . **Image Files**: Supported formats: ``.jpeg``, ``png``, ``jpg``
+        - . **Text Files**: Supported formats: ``.txt``, ``.docx``, ``.pdf``
+        - . **Image Files**: Supported formats: ``.jpeg``, ``png``, ``jpg``
 3. *Compare Files*: Upload a file and compare it against a dataset to calculate           similarity scores.
 4. *AI Detection*: The uploaded files runs through ai detection to detect if content is ai generated.
 
@@ -86,8 +86,8 @@ Once the application is running you can interact with the following features:
 **Request**:
     ``file``: The file to be uploaded (txt,jpg, etc).
 **Response**
-    . Success: ``{"message": "Text file processed and saved."}`` or ``{"message": "Image file processed and saved."}``.
-    . Error: ``{"error": "Unsupported Format."}``.
+    - . Success: ``{"message": "Text file processed and saved."}`` or ``{"message": "Image file processed and saved."}``.
+    - . Error: ``{"error": "Unsupported Format."}``.
     
 ### 2. POST /compare
 **Purpose**: Upload a file to compare against stored documents/images.
