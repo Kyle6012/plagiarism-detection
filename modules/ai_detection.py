@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer as AT, AutoModelForSequenceClassification as AMFSC
 import torch
 
-model_name = "microsoft/CodeBERT-base"
+model_name = "roberta-base-openai-detector"
 
 def load_ai_detection_model():
     tokenizer = AT.from_pretrained(model_name)
