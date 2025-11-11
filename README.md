@@ -6,9 +6,10 @@ A powerful plagiarism and AI-generated content detection system that helps ident
 
 - [Features](#features)
 - [Technologies Used](#technologies-used)
-- [Installation](#installation)
+- [Local Development Setup](#local-development-setup)
 - [Windows Local Deployment](#windows-local-deployment)
 - [Usage](#usage)
+- [Future Work](#future-work)
 
 ## Features
 
@@ -24,35 +25,72 @@ A powerful plagiarism and AI-generated content detection system that helps ident
 - **PostgreSQL with pgvector**: Database for storing document and image embeddings and performing vector similarity searches.
 - **Docker**: For containerizing and managing the development environment.
 
-## Installation
+## Local Development Setup
 
 To set up the plagiarism detection system locally, follow the steps below.
 
 ### Prerequisites
 
 - Python 3.12+
+- Poetry for Python package management
 - Node.js 18+
 - Docker and Docker Compose
 
 ### Step-by-Step Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Kyle6012/plagiarism-detection.git
-   cd plagiarism-detection
-   ```
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Kyle6012/plagiarism-detection.git
+    cd plagiarism-detection
+    ```
 
-2. **Backend Setup**:
-   ```bash
-   cd backend
-   poetry install
-   ```
+2.  **Backend Setup**:
+    - Navigate to the backend directory:
+      ```bash
+      cd backend
+      ```
+    - Install the required Python packages using Poetry:
+      ```bash
+      poetry install
+      ```
+    - Activate the virtual environment created by Poetry:
+        ```bash
+        poetry shell
+        ```
+    - Run the database migrations:
+        ```bash
+        alembic upgrade head
+        ```
 
-3. **Frontend Setup**:
-   ```bash
-   cd frontend
-   npm install
-   ```
+3.  **Frontend Setup**:
+    - Navigate to the frontend directory:
+      ```bash
+      cd ../frontend
+      ```
+    - Install the required Node.js packages:
+      ```bash
+      npm install
+      ```
+
+4.  **Running the Application**:
+    - **Start the Docker services** (PostgreSQL, Redis, etc.):
+        In the root directory of the project, run:
+        ```bash
+        docker-compose -f infra/docker-compose.yml up -d
+        ```
+    - **Start the backend server**:
+        In the `backend` directory, run:
+        ```bash
+        poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+        ```
+    - **Start the frontend server**:
+        In the `frontend` directory, run:
+        ```bash
+        npm run dev
+        ```
+
+5.  **Access the system**:
+    Open your browser and go to http://localhost:5173.
 
 ## Windows Local Deployment
 
@@ -78,25 +116,19 @@ To deploy the application locally on Windows 10 or 11, you will need to use WSL 
 
 2.  **Run the application with Docker Compose**:
     ```bash
-    docker-compose up -d
+    docker-compose -f infra/docker-compose.yml up -d
     ```
-    This will build and start all the services required for the application to run.
+    This will build and start all the services required for the application to run. The backend and frontend will be available at their respective ports.
 
 ## Usage
 
-### Running the Application
+Once the application is running, you can access the web interface at `http://localhost:5173`. From there, you can upload files for plagiarism and AI-generated content detection.
 
-1. **Start the backend server**:
-   ```bash
-   cd backend
-   poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
-   ```
+## Future Work
 
-2. **Start the frontend server**:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
+The following features are planned for future releases but are not yet implemented:
 
-3. **Access the system**:
-   Open your browser and go to http://localhost:5173.
+-   **Batch Processing**: The system is designed to support batch processing of documents for large-scale analysis. The `batch_processing.py` service contains a placeholder for this functionality, which will be implemented to handle asynchronous processing of multiple files.
+-   **User Authentication**: Implement user accounts and authentication to allow users to manage their own documents and view their history.
+-   **Dashboard and Reporting**: A dashboard to provide users with a summary of their plagiarism and AI detection results, along with detailed reports.
+-   **More File Formats**: Support for additional file formats, such as `.docx`, `.pdf`, and more.
