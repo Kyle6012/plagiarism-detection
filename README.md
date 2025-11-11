@@ -7,6 +7,7 @@ A powerful plagiarism and AI-generated content detection system that helps ident
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Installation](#installation)
+- [Windows Local Deployment](#windows-local-deployment)
 - [Usage](#usage)
 
 ## Features
@@ -52,6 +53,34 @@ To set up the plagiarism detection system locally, follow the steps below.
    cd frontend
    npm install
    ```
+
+## Windows Local Deployment
+
+To deploy the application locally on Windows 10 or 11, you will need to use WSL (Windows Subsystem for Linux) and Docker Desktop.
+
+### Prerequisites
+
+1.  **WSL 2**: Ensure you have WSL 2 installed. You can install it by running the following command in a PowerShell with administrator privileges:
+    ```powershell
+    wsl --install
+    ```
+    This will install the default Ubuntu distribution.
+
+2.  **Docker Desktop**: Download and install Docker Desktop for Windows. The installer can be found on the [Docker website](https://www.docker.com/products/docker-desktop/). During installation, make sure to select the "Use WSL 2 instead of Hyper-V" option.
+
+### Step-by-Step Setup
+
+1.  **Clone the repository in WSL**: Open your WSL terminal (e.g., Ubuntu) and clone the repository:
+    ```bash
+    git clone https://github.com/Kyle6012/plagiarism-detection.git
+    cd plagiarism-detection
+    ```
+
+2.  **Run the application with Docker Compose**:
+    ```bash
+    docker-compose up -d
+    ```
+    This will build and start all the services required for the application to run.
 
 ## Usage
 
