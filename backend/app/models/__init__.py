@@ -1,3 +1,5 @@
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from .base import Base
+from .document import Document
+from .batch import Batch
+from .comparison import Comparison
+from .ai_detection import AIDetection

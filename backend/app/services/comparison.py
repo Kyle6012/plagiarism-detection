@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models import Document
-from pgvector.sqlalchemy import l2_distance
 
 class ComparisonService:
     def __init__(self, db_session: AsyncSession):
@@ -9,6 +8,6 @@ class ComparisonService:
 
     async def find_similar(self, embedding, top_k=5):
         results = await self.db_session.execute(
-            select(Document).order_by(l2_distance(Document.embedding, embedding)).limit(top_k)
+            select(Document).order_by(Document.embedding.l2_distance(embedding)).limit(top_k)
         )
         return results.scalars().all()
