@@ -1,6 +1,5 @@
 import uuid
 from sqlalchemy import Column, String, Text, DateTime, func, UUID
-from sqlalchemy.dialects.postgresql import JSONB
 from pgvector.sqlalchemy import Vector
 from .base import Base
 
