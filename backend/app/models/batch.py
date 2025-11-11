@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy import Column, String, Integer, DateTime, func, UUID
-from . import Base
+from .base import Base
 
 class Batch(Base):
     __tablename__ = "batches"
