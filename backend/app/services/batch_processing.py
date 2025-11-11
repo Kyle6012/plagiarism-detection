@@ -1,4 +1,12 @@
 from app.core.celery import celery_app
+# The following imports are commented out because the process_batch function is a placeholder.
+# They will be needed when the function is implemented.
+# from app.services.embedding import EmbeddingService
+# from app.services.comparison import ComparisonService
+# from app.models import Document, Batch, Comparison, AIDetection
+# from sqlalchemy.ext.asyncio import AsyncSession
+# from sqlalchemy.future import select
+# import asyncio
 
 @celery_app.task
 def process_batch(batch_id: str):
