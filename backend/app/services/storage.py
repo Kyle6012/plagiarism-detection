@@ -24,6 +24,7 @@ class StorageService:
             return f"s3://{self.bucket_name}/{filename}"
         else:
             path = os.path.join(self.upload_dir, filename)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "wb") as f:
                 f.write(content)
             return path

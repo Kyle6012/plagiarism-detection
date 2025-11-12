@@ -116,9 +116,12 @@ This approach helps to:
 1.  **Install Python and Poetry**: We need to install the tools to run the backend.
     ```bash
     sudo apt-get update
-    sudo apt-get install python3-pip -y
-    pip3 install poetry
+    sudo apt-get install python3-pip python3.11-venv -y
+    sudo apt-get install pipx -y
+    pipx install poetry
+    pipx ensurepath
     ```
+    **Important:** You may need to close and reopen your WSL terminal at this point for the `poetry` command to be recognized.
 
 2.  **Install Backend Dependencies**: Navigate to the `backend` directory and install the necessary packages.
     ```bash
