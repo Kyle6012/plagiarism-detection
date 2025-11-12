@@ -7,7 +7,8 @@ A powerful plagiarism and AI-generated content detection system that helps ident
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Local Development Setup](#local-development-setup)
-- [Windows Local Deployment](#windows-local-deployment)
+- [Windows 10/11 Local Deployment Guide](#windows-1011-local-deployment-guide)
+    - [Why Use WSL? A Note for Windows Users](#why-use-wsl-a-note-for-windows-users)
 - [Usage](#usage)
 - [Future Work](#future-work)
 
@@ -27,7 +28,7 @@ A powerful plagiarism and AI-generated content detection system that helps ident
 
 ## Local Development Setup
 
-To set up the plagiarism detection system locally, follow the steps below.
+This section is for users familiar with software development. For a more detailed guide for Windows, please see the next section.
 
 ### Prerequisites
 
@@ -44,91 +45,132 @@ To set up the plagiarism detection system locally, follow the steps below.
     cd plagiarism-detection
     ```
 
-2.  **Backend Setup**:
-    - Navigate to the backend directory:
-      ```bash
-      cd backend
-      ```
-    - Install the required Python packages using Poetry:
-      ```bash
-      poetry install
-      ```
-    - Activate the virtual environment created by Poetry:
-        ```bash
-        poetry shell
-        ```
-    - Run the database migrations:
-        ```bash
-        alembic upgrade head
-        ```
+2.  **Start Infrastructure Services**:
+    ```bash
+    docker-compose -f infra/docker-compose.yml up -d
+    ```
 
-3.  **Frontend Setup**:
-    - Navigate to the frontend directory:
-      ```bash
-      cd ../frontend
-      ```
-    - Install the required Node.js packages:
-      ```bash
-      npm install
-      ```
+3.  **Backend Setup**:
+    ```bash
+    cd backend
+    poetry install
+    poetry shell
+    alembic upgrade head
+    poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ```
 
-4.  **Running the Application**:
-    - **Start the Docker services** (PostgreSQL, Redis, etc.):
-        In the root directory of the project, run:
-        ```bash
-        docker-compose -f infra/docker-compose.yml up -d
-        ```
-    - **Start the backend server**:
-        In the `backend` directory, run:
-        ```bash
-        poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-        ```
-    - **Start the frontend server**:
-        In the `frontend` directory, run:
-        ```bash
-        npm run dev
-        ```
+4.  **Frontend Setup**:
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
 
 5.  **Access the system**:
     Open your browser and go to http://localhost:5173.
 
-## Windows Local Deployment
 
-To deploy the application locally on Windows 10 or 11, you will need to use WSL (Windows Subsystem for Linux) and Docker Desktop.
+## Windows 10/11 Local Deployment Guide
 
-### Prerequisites
+This guide provides detailed, step-by-step instructions to run the application locally on a Windows 10 or 11 machine.
 
-1.  **WSL 2**: Ensure you have WSL 2 installed. You can install it by running the following command in a PowerShell with administrator privileges:
+### Why Use WSL? A Note for Windows Users
+
+You might wonder why we are using the "Windows Subsystem for Linux" (WSL) instead of running the commands directly in Windows. This is a great question!
+
+The simple answer is **reliability**. Modern web development tools, including those used in this project, are often designed and tested primarily for a Linux environment. By using WSL, we are creating a small, self-contained Linux environment directly on your Windows machine.
+
+This approach helps to:
+-   **Avoid Common Errors**: It prevents many common Windows-specific issues with file paths, command compatibility, and software installations.
+-   **Ensure Consistency**: It guarantees that the development environment behaves the same for everyone, regardless of their operating system.
+-   **Provide a Smoother Setup**: While it may seem like an extra step, using WSL is ultimately the most straightforward and reliable path to getting the application running successfully.
+
+### Part 1: Initial Setup (WSL and Docker)
+
+1.  **Install WSL 2**: Open PowerShell as an administrator and run:
     ```powershell
     wsl --install
     ```
-    This will install the default Ubuntu distribution.
+    This will install the Windows Subsystem for Linux (WSL) with the default Ubuntu distribution. Restart your computer when prompted.
 
-2.  **Docker Desktop**: Download and install Docker Desktop for Windows. The installer can be found on the [Docker website](https://www.docker.com/products/docker-desktop/). During installation, make sure to select the "Use WSL 2 instead of Hyper-V" option.
+2.  **Install Docker Desktop**: Download and install Docker Desktop for Windows from the [official Docker website](https://www.docker.com/products/docker-desktop/). During installation, ensure the "Use WSL 2 instead of Hyper-V" option is selected.
 
-### Step-by-Step Setup
+### Part 2: Setting Up the Project
 
-1.  **Clone the repository in WSL**: Open your WSL terminal (e.g., Ubuntu) and clone the repository:
+1.  **Open WSL Terminal**: Open your WSL terminal (you can find "Ubuntu" in your Start Menu). All the following commands will be run here.
+
+2.  **Clone the Repository**:
     ```bash
     git clone https://github.com/Kyle6012/plagiarism-detection.git
     cd plagiarism-detection
     ```
 
-2.  **Run the application with Docker Compose**:
+3.  **Start Infrastructure Services**: Run the Docker containers. This command starts the database and other background services. It does **not** start the main application itself.
     ```bash
     docker-compose -f infra/docker-compose.yml up -d
     ```
-    This will build and start all the services required for the application to run. The backend and frontend will be available at their respective ports.
+    You can verify that the containers are running in Docker Desktop. You should see containers named `plagiarism_db`, `plagiarism_redis`, and `plagiarism_minio`.
+
+### Part 3: Running the Backend
+
+1.  **Install Python and Poetry**: We need to install the tools to run the backend.
+    ```bash
+    sudo apt-get update
+    sudo apt-get install python3-pip -y
+    pip3 install poetry
+    ```
+
+2.  **Install Backend Dependencies**: Navigate to the `backend` directory and install the necessary packages.
+    ```bash
+    cd backend
+    poetry install
+    ```
+
+3.  **Run Database Migrations**: This sets up the database schema.
+    ```bash
+    poetry run alembic upgrade head
+    ```
+
+4.  **Start the Backend Server**:
+    ```bash
+    poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ```
+    **Leave this terminal open.** The backend is now running.
+
+### Part 4: Running the Frontend
+
+1.  **Open a New WSL Terminal**: Open a second WSL terminal window. You'll have two terminals running side-by-side.
+
+2.  **Install Node.js**: We need to install the tools to run the frontend.
+    ```bash
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
+
+3.  **Install Frontend Dependencies**: Navigate to the `frontend` directory in your **new** terminal.
+    ```bash
+    cd plagiarism-detection/frontend
+    npm install
+    ```
+
+4.  **Start the Frontend Server**:
+    ```bash
+    npm run dev
+    ```
+    **Leave this terminal open.** The frontend is now running.
+
+### Part 5: Access the Application
+
+The application is now fully running. You can access the web interface by opening your browser and navigating to:
+**http://localhost:5173**
 
 ## Usage
 
-Once the application is running, you can access the web interface at `http://localhost:5173`. From there, you can upload files for plagiarism and AI-generated content detection.
+Once the application is running, you can access the web interface to upload files for plagiarism and AI-generated content detection.
 
 ## Future Work
 
-The following features are planned for future releases but are not yet implemented:
-
--   **Batch Processing**: The system is designed to support batch processing of documents for large-scale analysis. The `batch_processing.py` service contains a placeholder for this functionality, which will be implemented to handle asynchronous processing of multiple files.
--   **User Authentication**: Implement user accounts and authentication to allow users to manage their own documents and view their history.
--   **Dashboard and Reporting**: A dashboard to provide users with a summary of their plagiarism and AI detection results, along with detailed reports.
--   **More File Formats**: Support for additional file formats, such as `.docx`, `.pdf`, and more.
+-   **Batch Processing**: The system is designed to support batch processing of documents for large-scale analysis. The `batch_processing.py` service contains a placeholder for this functionality.
+-   **User Authentication**: Implement user accounts and authentication.
+-   **Dashboard and Reporting**: A dashboard to provide users with a summary of their results.
+-   **More File Formats**: Support for additional file formats like `.docx` and `.pdf`.
