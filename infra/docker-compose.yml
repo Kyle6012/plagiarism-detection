@@ -34,6 +34,50 @@ services:
     volumes:
       - minio_data:/data
 
+  api:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: plagiarism_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - minio
+    env_file:
+      - ../backend/.env
+    volumes:
+      - ../backend:/app
+
+  celery-worker:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: plagiarism_celery_worker
+    command: celery -A app.core.celery.app worker -l info
+    depends_on:
+      - redis
+      - api
+    env_file:
+      - ../backend/.env
+    volumes:
+      - ../backend:/app
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: plagiarism_celery_beat
+    command: celery -A app.core.celery.app beat -l info
+    depends_on:
+      - redis
+      - api
+    env_file:
+      - ../backend/.env
+    volumes:
+      - ../backend:/app
+
 volumes:
   postgres_data:
   redis_data:
