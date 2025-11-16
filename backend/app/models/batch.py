@@ -1,11 +1,12 @@
 import uuid
-from sqlalchemy import Column, String, Integer, DateTime, func, UUID
+from sqlalchemy import Column, String, Integer, DateTime, func, UUID, ForeignKey
 from .base import Base
 
 class Batch(Base):
     __tablename__ = "batches"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     name = Column(String)
     total_docs = Column(Integer)
     processed = Column(Integer, default=0)
