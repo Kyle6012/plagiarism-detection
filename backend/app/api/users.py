@@ -16,8 +16,10 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
 
 router = APIRouter()
 
+from app.schemas import UserRead, UserUpdate
+
 router.include_router(
-    fastapi_users.get_users_router(),
+    fastapi_users.get_users_router(UserRead, UserUpdate),
     prefix="/users",
     tags=["users"],
 )

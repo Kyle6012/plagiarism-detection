@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from typing import List
 from app.services.storage import StorageService
+from app.services.parsing import extract_text_from_file
 from app.services.batch_processing import process_batch
 import uuid
 from app.models.batch import Batch
@@ -27,14 +28,21 @@ async def upload_documents(
     db.add(batch)
 
     for file in files:
-        content = await file.read()
         storage_path = f"{batch_id}/{file.filename}"
+        # Save the original file
+        await file.seek(0)
+        content = await file.read()
         storage_service.save(storage_path, content)
+
+        # Extract text for processing
+        await file.seek(0)
+        text_content = await extract_text_from_file(file)
 
         document = Document(
             batch_id=batch_id,
             filename=file.filename,
             storage_path=storage_path,
+            text_content=text_content,
             status="queued"
         )
         db.add(document)
