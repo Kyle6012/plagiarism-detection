@@ -19,8 +19,12 @@ const UploadForm: React.FC = () => {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch('/api/v1/documents/upload', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
                 body: formData,
             });
 

@@ -8,7 +8,35 @@ const RegisterPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // TODO: Implement registration logic
+        setError(null);
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || 'Registration failed');
+            }
+
+            // Redirect to login page
+            window.location.href = '/login';
+        } catch (error: any) {
+            setError(error.message);
+        }
     };
 
     return (
