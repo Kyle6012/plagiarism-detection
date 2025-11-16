@@ -4,6 +4,7 @@ from app.core.db import get_user_db
 from app.core.auth import auth_backend
 from fastapi import APIRouter
 import uuid
+from app.schemas import UserRead, UserCreate
 
 fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_db,
@@ -19,7 +20,7 @@ router.include_router(
 )
 
 router.include_router(
-    fastapi_users.get_register_router(),
+    fastapi_users.get_register_router(UserRead, UserCreate),
     prefix="/auth",
     tags=["auth"],
 )
@@ -31,7 +32,7 @@ router.include_router(
 )
 
 router.include_router(
-    fastapi_users.get_verify_router(),
+    fastapi_users.get_verify_router(UserRead),
     prefix="/auth",
     tags=["auth"],
 )
