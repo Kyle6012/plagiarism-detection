@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
-const RegisterPage: React.FC = () => {
-    const [email, setEmail] = useState('');
+const ResetPasswordPage: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get('token');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -17,21 +18,23 @@ const RegisterPage: React.FC = () => {
             return;
         }
 
+        if (!token) {
+            setError("No reset token found.");
+            return;
+        }
+
         try {
-            const response = await fetch('/api/v1/auth/register', {
+            const response = await fetch('/api/v1/auth/reset-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
+                body: JSON.stringify({ token, password }),
             });
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.detail || 'Registration failed');
+                throw new Error(data.detail || 'Failed to reset password');
             }
 
             setSuccess(true);
@@ -44,13 +47,13 @@ const RegisterPage: React.FC = () => {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="w-full max-w-md p-8 space-y-8 bg-surface rounded-lg shadow-lg text-center">
-                    <h2 className="text-3xl font-bold text-text-primary">Registration Successful</h2>
+                    <h2 className="text-3xl font-bold text-text-primary">Password Reset Successful</h2>
                     <p className="text-text-secondary">
                         You can now{' '}
                         <Link to="/login" className="font-medium text-primary hover:underline">
                             sign in
                         </Link>
-                        .
+                        {' '}with your new password.
                     </p>
                 </div>
             </div>
@@ -60,35 +63,11 @@ const RegisterPage: React.FC = () => {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-md p-8 space-y-8 bg-color-surface rounded-lg shadow-lg">
-                <h2 className="text-3xl font-bold text-center text-color-text-primary">Create an Account</h2>
-                <p className="text-center text-color-text-secondary">
-                    Already have an account?{' '}
-                    <Link to="/login" className="font-medium text-color-primary hover:underline">
-                        Sign in
-                    </Link>
-                </p>
+                <h2 className="text-3xl font-bold text-center text-color-text-primary">Reset Your Password</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-color-text-secondary">
-                            Email address
-                        </label>
-                        <div className="mt-1">
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none block w-full px-3 py-2 border border-color-border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-color-primary focus:border-color-primary sm:text-sm bg-color-background"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
                         <label htmlFor="password" className="block text-sm font-medium text-color-text-secondary">
-                            Password
+                            New Password
                         </label>
                         <div className="mt-1">
                             <input
@@ -106,7 +85,7 @@ const RegisterPage: React.FC = () => {
 
                     <div>
                         <label htmlFor="confirm-password" className="block text-sm font-medium text-color-text-secondary">
-                            Confirm Password
+                            Confirm New Password
                         </label>
                         <div className="mt-1">
                             <input
@@ -127,7 +106,7 @@ const RegisterPage: React.FC = () => {
                             type="submit"
                             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-color-primary hover:bg-color-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-color-primary"
                         >
-                            Create account
+                            Reset Password
                         </button>
                     </div>
                 </form>
@@ -141,4 +120,4 @@ const RegisterPage: React.FC = () => {
     );
 };
 
-export default RegisterPage;
+export default ResetPasswordPage;
