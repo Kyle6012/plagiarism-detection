@@ -1,49 +1,54 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
+const ForgotPasswordPage: React.FC = () => {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError(null);
+
         try {
-            const response = await fetch('/api/v1/auth/jwt/login', {
+            const response = await fetch('/api/v1/auth/forgot-password', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: new URLSearchParams({
-                    username: email,
-                    password: password,
-                }),
+                body: JSON.stringify({ email }),
             });
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.detail || 'Login failed');
+                throw new Error(data.detail || 'Failed to send reset email');
             }
 
-            const data = await response.json();
-            localStorage.setItem('token', data.access_token);
-            // Redirect to dashboard or home page
-            window.location.href = '/dashboard';
+            setSuccess(true);
         } catch (error: any) {
             setError(error.message);
         }
     };
 
+    if (success) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="w-full max-w-md p-8 space-y-8 bg-surface rounded-lg shadow-lg text-center">
+                    <h2 className="text-3xl font-bold text-text-primary">Password Reset Email Sent</h2>
+                    <p className="text-text-secondary">
+                        Please check your inbox for instructions on how to reset your password.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-md p-8 space-y-8 bg-color-surface rounded-lg shadow-lg">
-                <h2 className="text-3xl font-bold text-center text-color-text-primary">Welcome Back</h2>
+                <h2 className="text-3xl font-bold text-center text-color-text-primary">Forgot Your Password?</h2>
                 <p className="text-center text-color-text-secondary">
-                    Don't have an account?{' '}
-                    <Link to="/register" className="font-medium text-color-primary hover:underline">
-                        Sign up
-                    </Link>
+                    Enter your email address and we'll send you a link to reset your password.
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
@@ -65,37 +70,11 @@ const LoginPage: React.FC = () => {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-color-text-secondary">
-                            Password
-                        </label>
-                        <div className="mt-1">
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                className="appearance-none block w-full px-3 py-2 border border-color-border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-color-primary focus:border-color-primary sm:text-sm bg-color-background"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="text-sm">
-                            <Link to="/forgot-password" className="font-medium text-color-primary hover:underline">
-                                Forgot your password?
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div>
                         <button
                             type="submit"
                             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-color-primary hover:bg-color-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-color-primary"
                         >
-                            Sign in
+                            Send reset link
                         </button>
                     </div>
                 </form>
@@ -104,9 +83,14 @@ const LoginPage: React.FC = () => {
                         <p className="text-sm font-medium text-red-400">{error}</p>
                     </div>
                 )}
+                 <div className="text-sm text-center">
+                    <Link to="/login" className="font-medium text-color-primary hover:underline">
+                        Back to login
+                    </Link>
+                </div>
             </div>
         </div>
     );
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;
