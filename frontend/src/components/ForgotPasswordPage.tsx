@@ -25,8 +25,12 @@ const ForgotPasswordPage: React.FC = () => {
             }
 
             setSuccess(true);
-        } catch (error: any) {
-            setError(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
         }
     };
 

@@ -63,8 +63,12 @@ const UploadForm: React.FC = () => {
             const data = await response.json();
             setBatchId(data.data.batch_id);
             setFiles([]);
-        } catch (e: any) {
-            setError(e.message);
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
         } finally {
             setIsUploading(false);
         }

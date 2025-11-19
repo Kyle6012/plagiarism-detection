@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+interface Result {
+    document_name: string;
+    similarity: number;
+    similar_document_name: string;
+}
+
 const ResultsPage: React.FC = () => {
     const { batchId } = useParams<{ batchId: string }>();
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<Result[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -26,8 +32,12 @@ const ResultsPage: React.FC = () => {
 
                 const data = await response.json();
                 setResults(data.data);
-            } catch (e: any) {
-                setError(e.message);
+            } catch (e: unknown) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                } else {
+                    setError('An unexpected error occurred');
+                }
             } finally {
                 setLoading(false);
             }
