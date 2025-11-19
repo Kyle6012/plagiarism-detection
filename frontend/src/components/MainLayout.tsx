@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex h-screen">
       <aside className="w-64 bg-color-surface text-color-text-primary p-4 fixed h-full">

@@ -35,8 +35,12 @@ const LoginPage: React.FC = () => {
             const data = await response.json();
             login(data.access_token);
             navigate('/dashboard');
-        } catch (error: any) {
-            setError(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
         } finally {
             setIsLoading(false);
         }

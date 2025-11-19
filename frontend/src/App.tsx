@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './hooks/useAuth';
+import { AuthProvider } from './components/AuthProvider';
+import { useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
 import UploadForm from './components/UploadForm';
 import LoginPage from './components/LoginPage';

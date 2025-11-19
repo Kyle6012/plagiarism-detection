@@ -37,8 +37,12 @@ const DashboardPage: React.FC = () => {
 
                 const data = await response.json();
                 setMetrics(data.data);
-            } catch (e: any) {
-                setError(e.message);
+            } catch (e: unknown) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                } else {
+                    setError('An unexpected error occurred');
+                }
             }
         };
 
