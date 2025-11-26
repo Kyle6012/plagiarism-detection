@@ -1,4 +1,4 @@
-# Plagiarism Detection System
+https://github.com/Kyle6012/plagiarism-detection.git# Plagiarism Detection System
 
 A powerful plagiarism and AI-generated content detection system featuring a premium, modern UI and flexible deployment options. This project is a monorepo containing a React frontend and a FastAPI backend.
 
@@ -85,7 +85,7 @@ Now that you have the tools, let's run the app!
 1.  **Open your Terminal** (PowerShell/Ubuntu on Windows, Terminal on Mac/Linux).
 2.  **Clone the Project**:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/Kyle6012/plagiarism-detection.git
     cd plagiarism-detection
     ```
 3.  **Start the System**:
