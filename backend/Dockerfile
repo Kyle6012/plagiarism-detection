@@ -1,25 +1,20 @@
-# Stage 1: Build the application
-FROM python:3.11-bullseye as builder
+# Use single stage build for simplicity
+FROM python:3.11-slim
 
 WORKDIR /app
 
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+# Install poetry
+RUN pip install --no-cache-dir poetry
 
-RUN pip install poetry
-
+# Copy dependency files
 COPY backend/pyproject.toml backend/poetry.lock ./
-RUN poetry install --no-root --no-dev
 
-# Stage 2: Create the final image
-FROM python:3.11-bullseye
+# Install dependencies globally (no venv needed in container)
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-root --only main
 
-WORKDIR /app
-
-ENV PATH="/app/.venv/bin:$PATH"
-
-COPY --from=builder /app/.venv .venv
+# Copy application code
 COPY backend/ .
 
+# Run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

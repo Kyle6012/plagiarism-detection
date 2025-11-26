@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-interface DashboardMetrics {
+interface Metrics {
     num_batches: number;
     num_documents: number;
 }
 
-// Mock data for the chart
-const chartData = [
-    { name: 'Jan', documents: 400, batches: 24 },
-    { name: 'Feb', documents: 300, batches: 13 },
-    { name: 'Mar', documents: 200, batches: 98 },
-    { name: 'Apr', documents: 278, batches: 39 },
-    { name: 'May', documents: 189, batches: 48 },
-    { name: 'Jun', documents: 239, batches: 38 },
-    { name: 'Jul', documents: 349, batches: 43 },
-];
-
-const DashboardPage: React.FC = () => {
-    const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+const DashboardPage = () => {
+    const [metrics, setMetrics] = useState<Metrics | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -26,82 +15,69 @@ const DashboardPage: React.FC = () => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch('/api/v1/users/me/dashboard', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error('Failed to fetch');
                 const data = await response.json();
                 setMetrics(data.data);
-            } catch (e: unknown) {
-                if (e instanceof Error) {
-                    setError(e.message);
-                } else {
-                    setError('An unexpected error occurred');
-                }
+            } catch (e: any) {
+                setError(e.message);
             }
         };
 
         fetchMetrics();
     }, []);
 
-    const averageDocumentsPerBatch = metrics ? (metrics.num_documents / metrics.num_batches).toFixed(2) : 0;
+    const avg = metrics ? (metrics.num_documents / metrics.num_batches || 0).toFixed(1) : 0;
 
     return (
-        <div>
-            <h2 className="text-3xl font-bold text-color-text-primary mb-8">Dashboard</h2>
+        <div style={{ padding: '40px 0' }}>
+            <div style={{ marginBottom: '40px' }}>
+                <h1 style={{ fontSize: '36px', fontWeight: 700, marginBottom: '8px' }}>Dashboard</h1>
+                <p style={{ color: 'var(--text-secondary)' }}>Track your analysis activity</p>
+            </div>
+
             {error && (
-                <div className="p-4 bg-red-900 bg-opacity-50 rounded-lg">
-                    <p className="text-sm font-medium text-red-400">Error: {error}</p>
+                <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', marginBottom: '32px' }}>
+                    <p style={{ color: '#ef4444' }}>Error: {error}</p>
                 </div>
             )}
+
             {metrics && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="p-6 bg-color-surface rounded-lg shadow-lg">
-                        <h3 className="text-lg font-medium text-color-text-secondary">Batches Uploaded</h3>
-                        <p className="mt-2 text-4xl font-bold text-color-primary">{metrics.num_batches}</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '48px' }}>
+                    <div className="card">
+                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📦</div>
+                        <h3 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Total Batches</h3>
+                        <p style={{ fontSize: '32px', fontWeight: 700 }}>{metrics.num_batches}</p>
                     </div>
-                    <div className="p-6 bg-color-surface rounded-lg shadow-lg">
-                        <h3 className="text-lg font-medium text-color-text-secondary">Documents Processed</h3>
-                        <p className="mt-2 text-4xl font-bold text-color-primary">{metrics.num_documents}</p>
+
+                    <div className="card">
+                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📄</div>
+                        <h3 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Documents Analyzed</h3>
+                        <p style={{ fontSize: '32px', fontWeight: 700 }}>{metrics.num_documents}</p>
                     </div>
-                    <div className="p-6 bg-color-surface rounded-lg shadow-lg">
-                        <h3 className="text-lg font-medium text-color-text-secondary">Avg. Documents per Batch</h3>
-                        <p className="mt-2 text-4xl font-bold text-color-primary">{averageDocumentsPerBatch}</p>
+
+                    <div className="card">
+                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
+                        <h3 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Avg. per Batch</h3>
+                        <p style={{ fontSize: '32px', fontWeight: 700 }}>{avg}</p>
                     </div>
                 </div>
             )}
 
-            <div className="mt-8">
-                 <h3 className="text-2xl font-bold text-color-text-primary mb-4">Activity Overview</h3>
-                <div className="p-6 bg-color-surface rounded-lg shadow-lg" style={{ width: '100%', height: 400 }}>
-                    <ResponsiveContainer>
-                        <BarChart
-                            data={chartData}
-                            margin={{
-                                top: 5, right: 30, left: 20, bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                            <XAxis dataKey="name" stroke="#9CA3AF" />
-                            <YAxis stroke="#9CA3AF" />
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: '#1F2937',
-                                    border: '1px solid #374151',
-                                    color: '#F9FAFB',
-                                }}
-                            />
-                            <Legend wrapperStyle={{ color: '#F9FAFB' }} />
-                            <Bar dataKey="documents" fill="#6366F1" />
-                            <Bar dataKey="batches" fill="#4F46E5" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                <Link to="/upload" className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>📤</div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Upload Documents</h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Check for plagiarism & AI content</p>
+                </Link>
+
+                <Link to="/ai-check" className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>🤖</div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>AI Detection</h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Analyze text for AI authorship</p>
+                </Link>
             </div>
         </div>
     );

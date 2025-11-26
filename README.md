@@ -1,355 +1,176 @@
 # Plagiarism Detection System
 
-A powerful plagiarism and AI-generated content detection system that helps identify potential plagiarism and detect AI-generated text in a variety of file formats. This project is a monorepo containing a React frontend and a FastAPI backend.
-
-## Table of Contents
-
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [Local Development Setup](#local-development-setup)
-- [Docker Setup (Under Development)](#docker-setup-under-development)
-- [API Endpoints](#api-endpoints)
-- [Future Work](#future-work)
+A powerful plagiarism and AI-generated content detection system featuring a premium, modern UI and flexible deployment options. This project is a monorepo containing a React frontend and a FastAPI backend.
 
 ## Features
 
-- **Text Plagiarism Detection**: Upload and analyze text files to detect similarities with previously uploaded documents.
-- **Image Plagiarism Detection**: Upload image files to compare with stored image embeddings for similarity.
-- **AI-Generated Text Detection**: Detect AI-generated content in text using advanced AI models.
-- **Web Interface**: Simple and user-friendly web interface for easy interaction with the system.
-- **Asynchronous Processing**: Celery and Redis are used for background processing of large files.
-- **Scalable Storage**: MinIO is used for S3-compatible object storage.
+- **Premium UI**: Modern, responsive interface with glassmorphism, dark mode, and smooth animations.
+- **Text Plagiarism Detection**: Upload and analyze text files to detect similarities using semantic embeddings.
+- **AI-Generated Text Detection**: Detect AI-generated content using local HuggingFace models or optional external APIs (OpenAI).
+- **Archive Support**: Automatically extract and analyze files from `.zip`, `.tar`, `.tar.gz`, and other compressed formats.
+- **Flexible Analysis Options**: Choose plagiarism detection, AI detection, or both for each batch.
+- **Folder Upload**: Upload entire directories for batch processing.
+- **Dual Deployment**:
+    - **Full Mode (Docker)**: Complete feature set with local ML models, Celery workers, and Redis.
+    - **Lite Mode (Vercel)**: Lightweight deployment for serverless environments (ML models disabled).
+- **Scalable Architecture**: Asynchronous processing with Celery, Redis, and MinIO storage.
+- **Optional External APIs**: Configure OpenAI or other services for enhanced AI detection accuracy.
 
-## Technologies Used
+## 🚀 Getting Started (Beginner's Guide)
 
-- **FastAPI**: Web framework for building the backend API.
-- **React**: JavaScript library for building the user interface.
-- **PostgreSQL with pgvector**: Database for storing document and image embeddings and performing vector similarity searches.
-- **Celery and Redis**: For asynchronous task management.
-- **MinIO**: For S3-compatible object storage.
-- **Docker**: For containerizing and managing the development environment.
-- **Alembic**: For database migrations.
+Follow these steps to set up the project from scratch on your operating system.
+
+### 1. Install Prerequisites
+
+#### 🪟 Windows
+1.  **Install WSL2 (Recommended)**:
+    - Open PowerShell as Administrator and run: `wsl --install`
+    - Restart your computer.
+    - Open "Ubuntu" from the Start menu to set up your Linux username and password.
+2.  **Install Docker Desktop**:
+    - Download from [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/).
+    - During install, ensure "Use WSL 2 instead of Hyper-V" is checked.
+    - Open Docker Desktop settings -> Resources -> WSL Integration -> Enable for your Ubuntu distro.
+3.  **Install Git**:
+    - Download from [Git for Windows](https://git-scm.com/download/win).
+    - Install with default settings.
+4.  **Install Node.js**:
+    - Download the "LTS" version from [Node.js Website](https://nodejs.org/).
+
+#### 🍎 macOS
+1.  **Install Docker Desktop**:
+    - Download from [Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/).
+    - Drag to Applications and run it.
+2.  **Install Git & Node.js (via Homebrew)**:
+    - Open Terminal (Command + Space, type "Terminal").
+    - Install Homebrew:
+      ```bash
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      ```
+    - Install tools:
+      ```bash
+      brew install git node
+      ```
+
+#### 🐧 Linux (Ubuntu/Debian)
+1.  **Install Docker**:
+    ```bash
+    # Add Docker's official GPG key:
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+
+    # Install Docker packages:
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    ```
+2.  **Install Git & Node.js**:
+    ```bash
+    sudo apt update
+    sudo apt install git nodejs npm
+    ```
+
+### 2. Clone and Run
+
+Now that you have the tools, let's run the app!
+
+1.  **Open your Terminal** (PowerShell/Ubuntu on Windows, Terminal on Mac/Linux).
+2.  **Clone the Project**:
+    ```bash
+    git clone <repository-url>
+    cd plagiarism-detection
+    ```
+3.  **Start the System**:
+    ```bash
+    # Windows / Mac
+    docker-compose up --build -d
+
+    # Linux (if permission denied)
+    sudo docker-compose up --build -d
+    ```
+    *This will take a few minutes the first time as it downloads all dependencies.*
+
+4.  **Verify it's running**:
+    - Run `docker ps` to see the running containers.
+    - Open your browser to the links below.
+
+### 3. Access the Application
+- **Frontend (The App)**: [http://localhost:80](http://localhost:80)
+- **Backend API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **MinIO Storage Console**: [http://localhost:9001](http://localhost:9001)
+    - **Username**: `minioadmin`
+    - **Password**: `minioadmin`
+
+## Deployment Options
+
+### 1. Containerized (Docker) - Recommended
+Runs the complete system with all services (Frontend, Backend, Postgres, Redis, MinIO, Celery Worker).
+- **Config**: `docker-compose.yml` in the root.
+- **Env**: Uses `backend/.env.docker` automatically.
+
+### 2. Vercel (Lite Mode)
+Deploys the Frontend and a lightweight Backend to Vercel's serverless platform.
+- **Limitation**: Local ML models (Sentence Transformers) are disabled due to serverless bundle size limits.
+- **Config**: `vercel.json`.
+- **Setup**: Install Vercel CLI (`npm i -g vercel`) and run `vercel` in the root.
 
 ## Project Structure
 
-The project is organized as a monorepo with the following structure:
+- `backend/`: FastAPI application, database models, and ML logic.
+- `frontend/`: React application with Vite and Tailwind CSS.
+- `docker-compose.yml`: Root Docker configuration.
+- `vercel.json`: Vercel deployment configuration.
 
-- `backend/`: The FastAPI backend application.
-- `frontend/`: The React frontend application.
-- `infra/`: Docker Compose configuration for the infrastructure services.
+## Technologies Used
 
-## Local Development Setup
+- **Frontend**: React, Vite, Tailwind CSS (Premium Design System)
+- **Backend**: FastAPI, SQLAlchemy, Pydantic
+- **Database**: PostgreSQL with pgvector
+- **Async Processing**: Celery, Redis
+- **Storage**: MinIO (S3 compatible)
+- **ML**: Sentence Transformers, PyTorch (Docker mode only)
 
-### Prerequisites
+## Optional Configuration
 
-- Python 3.12+
-- Poetry for Python package management
-- Node.js 18+
-- Docker and Docker Compose
-
-### Step-by-Step Setup
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/plagiarism-detection.git
-    cd plagiarism-detection
-    ```
-
-2.  **Start Infrastructure Services**:
-    ```bash
-    docker-compose -f infra/docker-compose.yml up -d
-    ```
-
-3.  **Backend Setup**:
-    ```bash
-    cd backend
-    poetry install
-    poetry shell
-    alembic upgrade head
-    poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    ```
-
-4.  **Frontend Setup**:
-    ```bash
-    cd frontend
-    npm install
-    npm run dev
-    ```
-
-5.  **Access the system**:
-    Open your browser and go to http://localhost:5173.
-
-## Docker Setup (Under Development)
-
-The Docker setup is still under development and may not be fully functional.
-
-To build and run the entire application with Docker, use the following command:
+### External AI Detection APIs
+To use external APIs for more accurate AI detection, edit `backend/.env.docker`:
 
 ```bash
-sudo docker compose -f infra/docker-compose.yml up -d --build
+# Enable external AI detection
+USE_EXTERNAL_AI_DETECTION=true
+
+# Add your OpenAI API key
+OPENAI_API_KEY=sk-your-api-key-here
 ```
 
-## API Endpoints
+**Benefits of External APIs:**
+- Higher accuracy for AI detection
+- Support for latest AI models
+- No need to download large model files
 
-The backend API provides the following endpoints:
+### Archive Support
+The system automatically detects and extracts these formats:
+- `.zip` - Standard ZIP archives
+- `.tar` - TAR archives  
+- `.tar.gz`, `.tgz` - Gzip-compressed TAR
+- `.tar.bz2`, `.tbz2` - Bzip2-compressed TAR
 
-### Plagiarism Detection
+Simply upload archives, and all text files inside will be extracted and analyzed.
 
--   **`POST /api/v1/documents/upload`**: Upload a batch of documents for plagiarism detection. Requires authentication.
+## API Documentation
 
-    **Example:**
-    ```javascript
-    const handleUpload = async (files) => {
-        const formData = new FormData();
-        files.forEach(file => {
-            formData.append('files', file);
-        });
+Once running, visit `http://localhost:8000/docs` for the interactive Swagger UI documentation.
 
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch('/api/v1/documents/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
-
-            const data = await response.json();
-            console.log('Upload successful:', data);
-            // Returns: { status: "ok", data: { batch_id: "..." } }
-        } catch (error) {
-            console.error('Error uploading files:', error);
-        }
-    };
-    ```
-
--   **`GET /api/v1/batch/{batch_id}`**: Get the status of a processing batch. Requires authentication.
-
-    **Example:**
-    ```javascript
-    const checkBatchStatus = async (batchId) => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch(`/api/v1/batch/${batchId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            console.log('Batch status:', data);
-        } catch (error) {
-            console.error('Error fetching batch status:', error);
-        }
-    };
-    ```
-
--   **`GET /api/v1/batch/{batch_id}/results`**: Get the plagiarism results for a batch. Requires authentication.
-
-    **Example:**
-    ```javascript
-    const getBatchResults = async (batchId) => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch(`/api/v1/batch/${batchId}/results`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            console.log('Batch results:', data);
-        } catch (error) {
-            console.error('Error fetching batch results:', error);
-        }
-    };
-    ```
-
--   **`GET /api/v1/document/{document_id}`**: Get details for a specific document. Requires authentication.
-
-    **Example:**
-    ```javascript
-    const getDocument = async (documentId) => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch(`/api/v1/document/${documentId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            console.log('Document details:', data);
-        } catch (error) {
-            console.error('Error fetching document details:', error);
-        }
-    };
-    ```
-
-### Authentication
-
--   **`POST /api/v1/auth/register`**: Register a new user.
-
-    **Example:**
-    ```javascript
-    const registerUser = async (email, password) => {
-        try {
-            const response = await fetch('/api/v1/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (response.ok) {
-                console.log('Registration successful!');
-                // Redirect to login page
-            } else {
-                const errorData = await response.json();
-                console.error('Registration failed:', errorData.detail);
-            }
-        } catch (error) {
-            console.error('Error during registration:', error);
-        }
-    };
-    ```
-
--   **`POST /api/v1/auth/jwt/login`**: Log in a user and receive a JWT token.
-
-    **Example:**
-    ```javascript
-    const loginUser = async (email, password) => {
-        try {
-            const response = await fetch('/api/v1/auth/jwt/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    username: email,
-                    password: password,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.access_token);
-                console.log('Login successful!');
-                // Redirect to dashboard
-            } else {
-                console.error('Login failed');
-            }
-        } catch (error) {
-            console.error('Error during login:', error);
-        }
-    };
-    ```
-
--   **`POST /api/v1/auth/forgot-password`**: Request a password reset for a user.
-
-    **Example:**
-    ```javascript
-    const forgotPassword = async (email) => {
-        try {
-            const response = await fetch('/api/v1/auth/forgot-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            if (response.ok) {
-                console.log('Password reset email sent!');
-            } else {
-                console.error('Failed to send password reset email');
-            }
-        } catch (error) {
-            console.error('Error during password reset request:', error);
-        }
-    };
-    ```
-
--   **`POST /api/v1/auth/reset-password`**: Reset a user's password using a token.
-
-    **Example:**
-    ```javascript
-    const resetPassword = async (token, password) => {
-        try {
-            const response = await fetch('/api/v1/auth/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token, password }),
-            });
-
-            if (response.ok) {
-                console.log('Password reset successful!');
-            } else {
-                console.error('Password reset failed');
-            }
-        } catch (error) {
-            console.error('Error during password reset:', error);
-        }
-    };
-    ```
-
-### User Management
-
--   **`GET /api/v1/users/me`**: Get the current user's profile. Requires authentication.
-
-    **Example:**
-    ```javascript
-    const getUserProfile = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch('/api/v1/users/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            console.log('User profile:', data);
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
-        }
-    };
-    ```
-
-### Dashboard
-
--   **`GET /api/v1/users/me/dashboard`**: Get dashboard metrics for the current user. Requires authentication.
-
-    **Example:**
-    ```javascript
-    const getDashboardMetrics = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch('/api/v1/users/me/dashboard', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            console.log('Dashboard metrics:', data.data);
-            // Returns: { num_batches: X, num_documents: Y }
-        } catch (error) {
-            console.error('Error fetching dashboard metrics:', error);
-        }
-    };
-    ```
-
-## Concurrency and Multi-User Support
-
-The system is designed to handle multiple users and concurrent document processing efficiently. This is achieved through the following architectural choices:
-
--   **Asynchronous API**: The FastAPI backend is asynchronous, allowing it to handle a large number of concurrent HTTP requests without being blocked by I/O operations.
--   **Background Task Processing**: Heavy computations and file processing are offloaded to a distributed Celery task queue. This prevents API endpoints from being tied up and allows for scalable, parallel processing of documents from multiple users.
--   **Isolated Database Sessions**: Each API request is provided with an independent database session, ensuring that concurrent transactions are handled safely and without interfering with one another.
--   **Stateless Authentication**: The use of JWT for authentication ensures that the system is stateless, allowing it to be easily scaled horizontally across multiple instances.
+### Key Endpoints
+- `POST /api/v1/documents/upload?analysis_type=plagiarism|ai|both`: Upload documents or archives for analysis.
+- `GET /api/v1/batch/{id}/results`: Get analysis results.
+- `POST /api/v1/auth/register`: Create a new account.
+- `POST /api/v1/ai-check`: Check text for AI-generated content.

@@ -9,6 +9,7 @@ class Batch(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     name = Column(String)
     total_docs = Column(Integer)
-    processed = Column(Integer, default=0)
+    processed_docs = Column(Integer, default=0)
     status = Column(String)
+    analysis_type = Column(String, default="plagiarism")  # plagiarism, ai, or both
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -1,145 +1,108 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const RegisterPage: React.FC = () => {
+const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setError("Passwords don't match");
             return;
         }
 
         try {
             const response = await fetch('/api/v1/auth/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
             });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.detail || 'Registration failed');
-            }
-
+            if (!response.ok) throw new Error('Registration failed');
             setSuccess(true);
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError('An unexpected error occurred');
-            }
+        } catch (err: any) {
+            setError(err.message);
         }
     };
 
     if (success) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="w-full max-w-md p-8 space-y-8 bg-surface rounded-lg shadow-lg text-center">
-                    <h2 className="text-3xl font-bold text-text-primary">Registration Successful</h2>
-                    <p className="text-text-secondary">
-                        You can now{' '}
-                        <Link to="/login" className="font-medium text-primary hover:underline">
-                            sign in
-                        </Link>
-                        .
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+                <div className="glass" style={{ maxWidth: '420px', width: '100%', padding: '40px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '64px', marginBottom: '16px' }}>✅</div>
+                    <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '16px' }}>Account Created!</h2>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                        You can now sign in to your account
                     </p>
+                    <Link to="/login" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-flex' }}>
+                        Go to Login
+                    </Link>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen">
-            <div className="w-full max-w-md p-8 space-y-8 bg-color-surface rounded-lg shadow-lg">
-                <h2 className="text-3xl font-bold text-center text-color-text-primary">Create an Account</h2>
-                <p className="text-center text-color-text-secondary">
-                    Already have an account?{' '}
-                    <Link to="/login" className="font-medium text-color-primary hover:underline">
-                        Sign in
-                    </Link>
-                </p>
-                <form onSubmit={handleSubmit} className="space-y-6">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+            <div className="glass" style={{ maxWidth: '420px', width: '100%', padding: '40px' }}>
+                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>👤</div>
+                    <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>Create Account</h2>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                        Already have an account? <Link to="/login" style={{ color: 'var(--primary)' }}>Sign in</Link>
+                    </p>
+                </div>
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-color-text-secondary">
-                            Email address
-                        </label>
-                        <div className="mt-1">
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none block w-full px-3 py-2 border border-color-border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-color-primary focus:border-color-primary sm:text-sm bg-color-background"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
+                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Email</label>
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="you@example.com"
+                        />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-color-text-secondary">
-                            Password
-                        </label>
-                        <div className="mt-1">
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className="appearance-none block w-full px-3 py-2 border border-color-border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-color-primary focus:border-color-primary sm:text-sm bg-color-background"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
+                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Password</label>
+                        <input
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                        />
                     </div>
 
                     <div>
-                        <label htmlFor="confirm-password" className="block text-sm font-medium text-color-text-secondary">
-                            Confirm Password
-                        </label>
-                        <div className="mt-1">
-                            <input
-                                id="confirm-password"
-                                name="confirm-password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className="appearance-none block w-full px-3 py-2 border border-color-border rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-color-primary focus:border-color-primary sm:text-sm bg-color-background"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                        </div>
+                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Confirm Password</label>
+                        <input
+                            type="password"
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="•••••••• "
+                        />
                     </div>
 
-                    <div>
-                        <button
-                            type="submit"
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-color-primary hover:bg-color-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-color-primary"
-                        >
-                            Create account
-                        </button>
-                    </div>
+                    {error && (
+                        <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#ef4444', fontSize: '14px' }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                        Create Account
+                    </button>
                 </form>
-                {error && (
-                    <div className="mt-4 p-4 bg-red-900 bg-opacity-50 rounded-lg">
-                        <p className="text-sm font-medium text-red-400">{error}</p>
-                    </div>
-                )}
             </div>
         </div>
     );
