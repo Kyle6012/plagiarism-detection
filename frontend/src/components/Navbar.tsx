@@ -5,42 +5,43 @@ const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
 
   return (
-    <nav className="glass" style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 1000,
-      padding: '16px 0'
+    <nav className="glass fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[1200px] z-[1000] p-3 px-6 rounded-[20px] shadow-2xl" style={{
+      background: 'rgba(17, 24, 39, 0.7)',
+      backdropFilter: 'blur(16px)',
+      border: '1px solid rgba(255, 255, 255, 0.08)'
     }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            width: '36px',
+            height: '36px',
+            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
             borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
           }}>
-            <span style={{ fontSize: '20px' }}>📄</span>
+            <span style={{ fontSize: '18px' }}>🛡️</span>
           </div>
-          <span className="gradient-text" style={{ fontSize: '20px', fontWeight: 700 }}>PlagDetect</span>
+          <span className="text-gradient" style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em' }}>
+            PlagDetect
+          </span>
         </Link>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="btn-ghost" style={{ textDecoration: 'none' }}>Dashboard</Link>
-              <Link to="/upload" className="btn-ghost" style={{ textDecoration: 'none' }}>Upload</Link>
-              <Link to="/ai-check" className="btn-ghost" style={{ textDecoration: 'none' }}>AI Check</Link>
-              <button className="btn-ghost" onClick={() => { logout(); window.location.href = '/'; }}>Logout</button>
+              <Link to="/dashboard" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Dashboard</Link>
+              <Link to="/upload" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Upload</Link>
+              <Link to="/ai-check" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>AI Check</Link>
+              <Link to="/admin" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Admin</Link>
+              <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '14px', color: 'var(--error)' }} onClick={() => { logout(); window.location.href = '/'; }}>Logout</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn-ghost" style={{ textDecoration: 'none' }}>Login</Link>
-              <Link to="/register" className="btn-primary" style={{ textDecoration: 'none' }}>Get Started</Link>
+              <Link to="/login" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Login</Link>
+              <Link to="/register" className="btn-primary" style={{ textDecoration: 'none', padding: '10px 24px', fontSize: '14px' }}>Get Started</Link>
             </>
           )}
         </div>

@@ -66,15 +66,15 @@ async def _process_batch_async(batch_id: str):
                         
                         # Find similar documents
                         comparison_service = ComparisonService(session)
-                        similar_docs = await comparison_service.find_similar(embedding, top_k=5)
+                        similar_results = await comparison_service.find_similar(embedding, top_k=5)
                         
                         # Store comparisons
-                        for similar_doc in similar_docs:
+                        for similar_doc, similarity in similar_results:
                             if similar_doc.id != doc.id:  # Don't compare with self
                                 comparison = Comparison(
                                     doc_a=doc.id,
                                     doc_b=similar_doc.id,
-                                    similarity_score=0.85  # Placeholder - real score would use cosine similarity
+                                    similarity=similarity
                                 )
                                 session.add(comparison)
                 

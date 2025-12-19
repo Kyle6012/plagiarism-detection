@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15-alpine
+    image: ankane/pgvector:v0.5.1
     container_name: plagiarism_db
     environment:
       - POSTGRES_USER=user

@@ -9,6 +9,13 @@ from pydantic import BaseModel
 class AICheckRequest(BaseModel):
     text: str
 
+from app.models.user import User
+from app.api.auth import fastapi_users
+from app.core.db import get_db
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+import uuid
+
 router = APIRouter()
 storage_service = StorageService()
 ai_service = AIDetectionService()
@@ -17,19 +24,6 @@ ai_service = AIDetectionService()
 async def check_ai_content(request: AICheckRequest, user: User = Depends(fastapi_users.current_user())):
     result = ai_service.detect(request.text)
     return {"status": "ok", "data": result}
-
-import uuid
-from app.models.batch import Batch
-from app.models.document import Document
-from app.models.comparison import Comparison
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from app.core.db import get_db
-from app.models.user import User
-from app.api.auth import fastapi_users
-
-router = APIRouter()
-storage_service = StorageService()
 
 @router.post("/documents/upload", status_code=202)
 async def upload_documents(
@@ -70,7 +64,7 @@ async def upload_documents(
                 # Extract archive
                 extracted_files = ArchiveExtractor.extract_and_filter(
                     temp_archive_path,
-                    allowed_extensions=['.txt', '.pdf', '.docx', '.doc', '.md']
+                    allowed_extensions=['.txt', '.pdf', '.docx', '.doc', '.md', '.png', '.jpg', '.jpeg']
                 )
                 
                 # Add extracted files to processing list
@@ -99,11 +93,35 @@ async def upload_documents(
         storage_service.save(storage_path, content)
 
         # Extract text for processing
-        # Create a file-like object for text extraction
-        from io import BytesIO
-        file_obj = BytesIO(content)
-        file_obj.name = filename
-        text_content = await extract_text_from_file(file_obj)
+        text_content = ""
+        
+        # Check if it's an image
+        from app.services.ocr import OCRService
+        
+        if OCRService.is_image(filename):
+            # Save temp file for OCR if not already saved
+            if not temp_path:
+                temp_path = os.path.join(tempfile.gettempdir(), filename)
+                with open(temp_path, 'wb') as f:
+                    f.write(content)
+            
+            text_content = OCRService.extract_text_from_image(temp_path)
+        else:
+            # Create a file-like object for text extraction
+            from io import BytesIO
+            file_obj = BytesIO(content)
+            file_obj.name = filename
+            text_content = await extract_text_from_file(file_obj)
+            
+            # Fallback to OCR for PDFs if text extraction yields little/no text (scanned PDF)
+            if filename.lower().endswith('.pdf') and len(text_content.strip()) < 50:
+                if not temp_path:
+                    temp_path = os.path.join(tempfile.gettempdir(), filename)
+                    with open(temp_path, 'wb') as f:
+                        f.write(content)
+                ocr_text = OCRService.extract_text_from_scanned_pdf(temp_path)
+                if len(ocr_text.strip()) > len(text_content.strip()):
+                    text_content = ocr_text
 
         document = Document(
             batch_id=batch_id,
@@ -118,8 +136,8 @@ async def upload_documents(
         if temp_path and os.path.exists(temp_path):
             try:
                 os.remove(temp_path)
-            except:
-                pass
+            except OSError as e:
+                print(f"Error removing temporary file {temp_path}: {e}")
 
     await db.commit()
 
@@ -127,6 +145,79 @@ async def upload_documents(
 
     return {"status": "ok", "data": {"batch_id": str(batch_id)}}
 
+@router.get("/batches/{batch_id}/export/csv")
+async def export_batch_csv(
+    batch_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(fastapi_users.current_user())
+):
+    batch = db.query(Batch).filter(Batch.id == batch_id, Batch.user_id == user.id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch not found")
+    
+    documents = db.query(Document).filter(Document.batch_id == batch_id).all()
+    
+    from app.services.report import ReportService
+    from fastapi.responses import Response
+    
+    csv_content = ReportService.generate_csv_report(documents)
+    
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=report_{batch_id}.csv"}
+    )
+
+@router.get("/batches/{batch_id}/export/pdf")
+async def export_batch_pdf(
+    batch_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(fastapi_users.current_user())
+):
+    batch = db.query(Batch).filter(Batch.id == batch_id, Batch.user_id == user.id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch not found")
+    
+    documents = db.query(Document).filter(Document.batch_id == batch_id).all()
+    
+    from app.services.report import ReportService
+    from fastapi.responses import Response
+    
+    pdf_content = ReportService.generate_pdf_report(batch, documents)
+    
+    return Response(
+        content=pdf_content,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=report_{batch_id}.pdf"}
+    )
+
+@router.get("/admin/stats")
+async def get_admin_stats(
+    db: Session = Depends(get_db),
+    user: User = Depends(fastapi_users.current_user())
+):
+    # In a local tool, we allow any authenticated user to see stats
+    # If strictly admin, check user.role == 'admin'
+    
+    total_users = db.query(User).count()
+    total_batches = db.query(Batch).count()
+    total_documents = db.query(Document).count()
+    
+    # Calculate storage usage (approximate)
+    # In real app, query MinIO or check file sizes
+    storage_usage_mb = total_documents * 0.5 # Assume 0.5MB per doc avg
+    
+    return {
+        "status": "ok",
+        "data": {
+            "total_users": total_users,
+            "total_batches": total_batches,
+            "total_documents": total_documents,
+            "storage_usage_mb": storage_usage_mb,
+            "system_status": "Healthy",
+            "version": "1.0.0"
+        }
+    }
 
 @router.get("/batch/{batch_id}")
 async def get_batch_status(batch_id: str, db: Session = Depends(get_db)):
@@ -137,13 +228,23 @@ async def get_batch_status(batch_id: str, db: Session = Depends(get_db)):
 
 @router.get("/batch/{batch_id}/results")
 async def get_batch_results(batch_id: str, db: Session = Depends(get_db)):
-    # This is a simplified query. A real implementation might involve more complex joins and filtering.
-    comparisons = await db.execute(
-        select(Comparison)
-        .join(Document, Comparison.doc_a == Document.id)
-        .where(Document.batch_id == uuid.UUID(batch_id))
+    # Join Comparison with Document to get filenames
+    from sqlalchemy.orm import aliased
+    DocA = aliased(Document)
+    DocB = aliased(Document)
+    
+    results = await db.execute(
+        select(
+            DocA.filename.label("document_name"),
+            Comparison.similarity,
+            DocB.filename.label("similar_document_name")
+        )
+        .join(DocA, Comparison.doc_a == DocA.id)
+        .join(DocB, Comparison.doc_b == DocB.id)
+        .where(DocA.batch_id == uuid.UUID(batch_id))
     )
-    return {"status": "ok", "data": comparisons.scalars().all()}
+    
+    return {"status": "ok", "data": [dict(r._mapping) for r in results.all()]}
 
 @router.get("/document/{document_id}")
 async def get_document(document_id: str, db: Session = Depends(get_db)):

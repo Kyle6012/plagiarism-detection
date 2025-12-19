@@ -37,4 +37,6 @@ class StorageService:
                 ExpiresIn=3600,
             )
         else:
-            return None
+            # For local storage, return a relative URL that the frontend can use
+            # Assuming the backend serves the 'uploads' directory at /uploads
+            return f"/api/v1/files/{filename}"

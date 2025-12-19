@@ -52,7 +52,6 @@ nvidia-nvtx-cu12==12.6.77
 packaging==25.0
 pathspec==0.12.1
 pgvector==0.2.5
-pillow==12.0.0
 platformdirs==4.5.0
 pluggy==1.6.0
 prompt_toolkit==3.0.52
@@ -63,6 +62,8 @@ PyJWT==2.10.1
 pytest==7.4.4
 python-dateutil==2.9.0.post0
 python-multipart==0.0.6
+pdfminer.six==20240706
+python-docx==1.1.2
 PyYAML==6.0.3
 redis==5.3.1
 regex==2025.11.3
@@ -92,3 +93,8 @@ urllib3==2.5.0
 uvicorn==0.24.0.post1
 vine==5.1.0
 wcwidth==0.2.14
+openai==1.59.3
+pytesseract==0.3.10
+pdf2image==1.17.0
+Pillow==10.2.0
+reportlab==4.0.9

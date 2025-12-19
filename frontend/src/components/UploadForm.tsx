@@ -44,35 +44,46 @@ const UploadForm = () => {
     };
 
     return (
-        <div style={{ padding: '40px 0', maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '40px' }}>
-                <h1 style={{ fontSize: '36px', fontWeight: 700, marginBottom: '8px' }}>Upload Documents</h1>
-                <p style={{ color: 'var(--text-secondary)' }}>Upload files, folders, or archives for analysis</p>
+        <div className="container fade-in" style={{ padding: '60px 0' }}>
+            <div style={{ marginBottom: '60px', textAlign: 'center' }}>
+                <h1 className="text-gradient" style={{ fontSize: '56px', fontWeight: 800, marginBottom: '16px', letterSpacing: '-0.02em' }}>
+                    Analyze Content
+                </h1>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '18px' }}>
+                    Upload documents, images, or archives for deep analysis.
+                </p>
             </div>
 
-            <div className="glass" style={{ padding: '32px' }}>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="glass" style={{ padding: '48px', borderRadius: '32px', boxShadow: '0 30px 60px rgba(0,0,0,0.4)' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                     {/* Analysis Type */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '12px', fontSize: '14px', fontWeight: 500 }}>Analysis Type</label>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                            {['plagiarism', 'ai', 'both'].map(type => (
-                                <label key={type} style={{ cursor: 'pointer' }}>
+                        <label style={{ display: 'block', marginBottom: '20px', fontSize: '16px', fontWeight: 700, color: 'white', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                            Analysis Mode
+                        </label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                            {[
+                                { id: 'plagiarism', label: 'Plagiarism', icon: '🔍' },
+                                { id: 'ai', label: 'AI Detection', icon: '🤖' },
+                                { id: 'both', label: 'Full Scan', icon: '✨' }
+                            ].map(type => (
+                                <label key={type.id} style={{ cursor: 'pointer' }}>
                                     <input
                                         type="radio"
                                         name="analysisType"
-                                        value={type}
-                                        checked={analysisType === type}
+                                        value={type.id}
+                                        checked={analysisType === type.id}
                                         onChange={(e) => setAnalysisType(e.target.value)}
                                         style={{ display: 'none' }}
                                     />
-                                    <div className="card" style={{
+                                    <div className={`glass card-hover ${analysisType === type.id ? 'active-card' : ''}`} style={{
                                         textAlign: 'center',
-                                        padding: '16px',
-                                        border: analysisType === type ? '1px solid var(--primary)' : '1px solid var(--glass-border)',
-                                        background: analysisType === type ? 'rgba(99, 102, 241, 0.1)' : 'var(--glass)'
+                                        padding: '24px 16px',
+                                        borderRadius: '20px',
+                                        transition: 'var(--transition)'
                                     }}>
-                                        <span style={{ textTransform: 'capitalize', fontSize: '14px', fontWeight: 500 }}>{type}</span>
+                                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>{type.icon}</div>
+                                        <span style={{ fontSize: '15px', fontWeight: 700 }}>{type.label}</span>
                                     </div>
                                 </label>
                             ))}
@@ -81,21 +92,25 @@ const UploadForm = () => {
 
                     {/* Upload Area */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '12px', fontSize: '14px', fontWeight: 500 }}>Files</label>
-                        <label style={{
+                        <label style={{ display: 'block', marginBottom: '20px', fontSize: '16px', fontWeight: 700, color: 'white', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                            Documents
+                        </label>
+                        <label className="glass upload-zone" style={{
                             display: 'block',
-                            padding: '48px',
+                            padding: '80px 40px',
                             border: '2px dashed var(--glass-border)',
-                            borderRadius: '12px',
+                            borderRadius: '24px',
                             textAlign: 'center',
                             cursor: 'pointer',
-                            transition: 'all 0.3s'
+                            transition: 'var(--transition)'
                         }}>
-                            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📤</div>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                                <span style={{ color: 'var(--primary)' }}>Click to upload</span> or drag and drop
+                            <div style={{ fontSize: '64px', marginBottom: '24px' }}>📤</div>
+                            <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>
+                                <span className="text-gradient-primary">Select files</span> or drag & drop
+                            </h3>
+                            <p style={{ fontSize: '15px', color: 'var(--text-muted)' }}>
+                                Supports PDF, DOCX, TXT, PNG, JPG, ZIP, TAR
                             </p>
-                            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>PDF, DOCX, TXT, ZIP, TAR</p>
                             <input
                                 type="file"
                                 multiple
@@ -107,33 +122,68 @@ const UploadForm = () => {
 
                     {/* File List */}
                     {files.length > 0 && (
-                        <div>
-                            <p style={{ fontSize: '14px', marginBottom: '12px', color: 'var(--text-secondary)' }}>Selected: {files.length} files</p>
-                            <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                        <div className="fade-in">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+                                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                                    Selected Files ({files.length})
+                                </p>
+                                <button type="button" onClick={() => setFiles([])} style={{ fontSize: '13px', color: 'var(--error)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                                    Clear All
+                                </button>
+                            </div>
+                            <div style={{ maxHeight: '240px', overflowY: 'auto', display: 'grid', gap: '12px', paddingRight: '8px' }}>
                                 {files.map((file, i) => (
-                                    <div key={i} style={{ padding: '8px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '6px', fontSize: '13px', marginBottom: '6px' }}>
-                                        {file.name} <span style={{ color: 'var(--text-muted)' }}>({(file.size / 1024).toFixed(1)} KB)</span>
+                                    <div key={i} className="glass" style={{
+                                        padding: '16px 20px',
+                                        fontSize: '14px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        borderRadius: '16px'
+                                    }}>
+                                        <span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%' }}>
+                                            {file.name}
+                                        </span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
+                                            {(file.size / 1024).toFixed(1)} KB
+                                        </span>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    <button type="submit" className="btn-primary" disabled={files.length === 0 || isUploading} style={{ width: '100%', justifyContent: 'center' }}>
-                        {isUploading ? 'Uploading...' : 'Upload & Analyze'}
+                    <button type="submit" className="btn-primary" disabled={files.length === 0 || isUploading} style={{
+                        width: '100%',
+                        padding: '20px',
+                        fontSize: '18px',
+                        fontWeight: 800,
+                        borderRadius: '18px'
+                    }}>
+                        {isUploading ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className="spinner" style={{ width: '24px', height: '24px', border: '3px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }} />
+                                Processing...
+                            </div>
+                        ) : 'Start Deep Analysis'}
                     </button>
                 </form>
 
                 {batchId && (
-                    <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px' }}>
-                        <p style={{ fontSize: '14px', marginBottom: '8px', color: '#22c55e' }}>✓ Upload successful!</p>
-                        <Link to={`/results/${batchId}`} style={{ color: 'var(--primary)', fontSize: '14px' }}>View results →</Link>
+                    <div className="fade-in" style={{ marginTop: '40px', padding: '32px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '24px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '16px' }}>✅</div>
+                        <p style={{ fontSize: '18px', marginBottom: '24px', color: 'var(--success)', fontWeight: 700 }}>
+                            Upload successful! Analysis in progress.
+                        </p>
+                        <Link to={`/dashboard`} className="btn-secondary" style={{ display: 'inline-flex', padding: '14px 32px', borderRadius: '14px', textDecoration: 'none', fontWeight: 700 }}>
+                            Go to Dashboard →
+                        </Link>
                     </div>
                 )}
 
                 {error && (
-                    <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', color: '#ef4444', fontSize: '14px' }}>
-                        {error}
+                    <div className="fade-in" style={{ marginTop: '40px', padding: '24px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '20px', color: 'var(--error)', fontSize: '15px', fontWeight: 600, textAlign: 'center' }}>
+                        ⚠️ {error}
                     </div>
                 )}
             </div>

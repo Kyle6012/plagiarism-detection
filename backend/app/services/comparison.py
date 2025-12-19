@@ -7,7 +7,17 @@ class ComparisonService:
         self.db_session = db_session
 
     async def find_similar(self, embedding, top_k=5):
-        results = await self.db_session.execute(
-            select(Document).order_by(Document.embedding.l2_distance(embedding)).limit(top_k)
-        )
-        return results.scalars().all()
+        try:
+            # Use cosine distance for similarity
+            # similarity = 1 - cosine_distance
+            # Note: pgvector's cosine_distance operator returns 1 - cosine_similarity
+            # So 1 - cosine_distance gives us the cosine similarity back
+            results = await self.db_session.execute(
+                select(Document, (1 - Document.embedding.cosine_distance(embedding)).label("similarity"))
+                .order_by(Document.embedding.cosine_distance(embedding))
+                .limit(top_k)
+            )
+            return results.all()
+        except Exception as e:
+            print(f"Error in find_similar: {e}")
+            return []
