@@ -67,19 +67,25 @@ const AIDetectionPage = () => {
                 </form>
 
                 {result && (
-                    <div className="fade-in" style={{ marginTop: '32px', padding: '24px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '12px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>Analysis Results</h3>
-                        <div style={{ display: 'grid', gap: '16px' }}>
-                            <div>
-                                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>AI Probability</p>
-                                <p className="text-gradient-primary" style={{ fontSize: '28px', fontWeight: 700 }}>
-                                    {(result.score * 100).toFixed(1)}%
-                                </p>
+                    <div className="fade-in" style={{ marginTop: '32px' }}>
+                        <div style={{ padding: '24px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '12px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>Analysis Results</h3>
+                            <div style={{ display: 'grid', gap: '16px' }}>
+                                <div>
+                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>AI Probability</p>
+                                    <p className="text-gradient-primary" style={{ fontSize: '28px', fontWeight: 700 }}>
+                                        {(result.score * 100).toFixed(1)}%
+                                    </p>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Classification</p>
+                                    <p style={{ fontSize: '18px', fontWeight: 600 }}>{result.label || 'N/A'}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Classification</p>
-                                <p style={{ fontSize: '18px', fontWeight: 600 }}>{result.label || 'N/A'}</p>
-                            </div>
+                        </div>
+                        <div style={{ marginTop: '24px', padding: '24px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '12px', fontSize: '14px', color: '#ffc107' }}>
+                            <h4 style={{ fontWeight: 600, marginBottom: '8px' }}>Important Disclaimer</h4>
+                            <p>AI detection models are not perfect and can produce false positives. The results should be used as a guideline, not as a definitive conclusion. The model used here is `roberta-base-openai-detector`, which has known limitations.</p>
                         </div>
                     </div>
                 )}

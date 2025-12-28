@@ -32,6 +32,21 @@ async def upload_documents(
     db: Session = Depends(get_db),
     user: User = Depends(fastapi_users.current_user())
 ):
+    for file in files:
+        if file.size > 10 * 1024 * 1024:  # 10 MB limit
+            raise HTTPException(status_code=413, detail=f"File size for {file.filename} exceeds 10MB limit.")
+
+        allowed_mime_types = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "text/plain",
+            "application/zip",
+            "application/x-tar",
+            "image/png",
+            "image/jpeg"
+        ]
+        if file.content_type not in allowed_mime_types:
+            raise HTTPException(status_code=400, detail=f"Invalid file type for {file.filename}: {file.content_type}")
     batch_id = uuid.uuid4()
 
     batch = Batch(

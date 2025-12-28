@@ -8,6 +8,7 @@ import DashboardPage from './components/DashboardPage';
 import UploadForm from './components/UploadForm';
 import AIDetectionPage from './components/AIDetectionPage';
 import AdminPage from './components/AdminPage';
+import BatchResultsPage from './components/BatchResultsPage';
 import './index.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             <Route path="upload" element={<UploadForm />} />
             <Route path="ai-check" element={<AIDetectionPage />} />
             <Route path="admin" element={<AdminPage />} />
+            <Route path="batch/:batchId" element={<BatchResultsPage />} />
           </Route>
         </Routes>
       </Router>
