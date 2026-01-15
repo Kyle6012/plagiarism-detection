@@ -25,18 +25,28 @@ class EmbeddingService:
                 break
         return chunks
 
+    def encode_chunks(self, text):
+        """Generate embeddings for each chunk of text"""
+        if not self.model:
+            return [], []
+            
+        chunks = self.chunk_text(text)
+        if not chunks:
+            return [], []
+            
+        embeddings = [self.model.encode(chunk) for chunk in chunks]
+        return chunks, embeddings
+
     def generate_text_embedding(self, text):
         if not self.model:
             return []
         
         # For long texts, we chunk and average the embeddings
-        # This is a simplified approach for a single document embedding
-        chunks = self.chunk_text(text)
-        if not chunks:
+        chunks, embeddings = self.encode_chunks(text)
+        if not embeddings:
             return []
             
         import numpy as np
-        embeddings = [self.model.encode(chunk) for chunk in chunks]
         avg_embedding = np.mean(embeddings, axis=0)
         return avg_embedding.tolist()
 

@@ -1,564 +1,0 @@
-Sending build context to Docker daemon  530.1kBSending build context to Docker daemon  2.104MBSending build context to Docker daemon  2.628MBSending build context to Docker daemon  3.153MBSending build context to Docker daemon  3.677MBSending build context to Docker daemon  4.201MBSending build context to Docker daemon  4.726MBSending build context to Docker daemon   5.25MBSending build context to Docker daemon  5.775MBSending build context to Docker daemon  6.299MBSending build context to Docker daemon  6.823MBSending build context to Docker daemon  7.348MBSending build context to Docker daemon  7.872MBSending build context to Docker daemon  8.397MBSending build context to Docker daemon  8.921MBSending build context to Docker daemon  9.445MBSending build context to Docker daemon   9.97MBSending build context to Docker daemon  10.49MBSending build context to Docker daemon  11.02MBSending build context to Docker daemon  11.54MBSending build context to Docker daemon  12.07MBSending build context to Docker daemon  12.59MBSending build context to Docker daemon  13.12MBSending build context to Docker daemon  13.64MBSending build context to Docker daemon  14.17MBSending build context to Docker daemon  14.69MBSending build context to Docker daemon  15.21MBSending build context to Docker daemon  15.74MBSending build context to Docker daemon  16.26MBSending build context to Docker daemon  16.79MBSending build context to Docker daemon  17.31MBSending build context to Docker daemon  17.84MBSending build context to Docker daemon  18.36MBSending build context to Docker daemon  18.88MBSending build context to Docker daemon  19.41MBSending build context to Docker daemon  19.93MBSending build context to Docker daemon  20.46MBSending build context to Docker daemon  20.98MBSending build context to Docker daemon  21.51MBSending build context to Docker daemon  22.03MBSending build context to Docker daemon  22.56MBSending build context to Docker daemon  23.08MBSending build context to Docker daemon   23.6MBSending build context to Docker daemon  24.13MBSending build context to Docker daemon  24.65MBSending build context to Docker daemon  25.18MBSending build context to Docker daemon   25.7MBSending build context to Docker daemon  26.23MBSending build context to Docker daemon  26.75MBSending build context to Docker daemon  27.28MBSending build context to Docker daemon   27.8MBSending build context to Docker daemon  28.32MBSending build context to Docker daemon  28.85MBSending build context to Docker daemon  29.37MBSending build context to Docker daemon   29.9MBSending build context to Docker daemon  30.42MBSending build context to Docker daemon  30.95MBSending build context to Docker daemon  31.47MBSending build context to Docker daemon  31.99MBSending build context to Docker daemon  32.52MBSending build context to Docker daemon  33.04MBSending build context to Docker daemon  33.57MBSending build context to Docker daemon  34.09MBSending build context to Docker daemon  34.62MBSending build context to Docker daemon  35.14MBSending build context to Docker daemon  35.67MBSending build context to Docker daemon  36.19MBSending build context to Docker daemon  36.71MBSending build context to Docker daemon  37.24MBSending build context to Docker daemon  37.76MBSending build context to Docker daemon  38.29MBSending build context to Docker daemon  38.81MBSending build context to Docker daemon  39.34MBSending build context to Docker daemon  39.86MBSending build context to Docker daemon  40.39MBSending build context to Docker daemon  40.91MBSending build context to Docker daemon  41.43MBSending build context to Docker daemon  41.96MBSending build context to Docker daemon  43.01MBSending build context to Docker daemon  43.18MB
-Step 1/11 : FROM python:3.11-slim
- ---> cb352e69d7b6
-Step 2/11 : WORKDIR /app
- ---> Using cache
- ---> 6bd6890f63e3
-Step 3/11 : RUN apt-get update && apt-get install -y     tesseract-ocr     libtesseract-dev     poppler-utils     && rm -rf /var/lib/apt/lists/*
- ---> Using cache
- ---> b16ef52c62ab
-Step 4/11 : RUN pip install --no-cache-dir poetry
- ---> Using cache
- ---> e260cf0d0e46
-Step 5/11 : COPY backend/pyproject.toml backend/poetry.lock ./
- ---> Using cache
- ---> e28ae6914b02
-Step 6/11 : RUN poetry config virtualenvs.create false     && poetry install --no-root --only main
- ---> Using cache
- ---> b0d3e0bb4e3e
-Step 7/11 : COPY backend/requirements.txt .
- ---> Using cache
- ---> 87c2f9bbf417
-Step 8/11 : RUN pip install --default-timeout=1000 -r requirements.txt
- ---> Running in ab3a083a2c48
-Requirement already satisfied: alembic==1.17.1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (1.17.1)
-Requirement already satisfied: amqp==5.3.1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (5.3.1)
-Requirement already satisfied: annotated-types==0.7.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (0.7.0)
-Requirement already satisfied: anyio==3.7.1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (3.7.1)
-Requirement already satisfied: asyncpg==0.29.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (0.29.0)
-Requirement already satisfied: billiard==4.2.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 6)) (4.2.2)
-Collecting black==23.12.1 (from -r requirements.txt (line 7))
-  Downloading black-23.12.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (68 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.0/69.0 kB 451.6 kB/s eta 0:00:00
-Collecting boto3==1.40.70 (from -r requirements.txt (line 8))
-  Downloading boto3-1.40.70-py3-none-any.whl.metadata (6.8 kB)
-Collecting botocore==1.40.70 (from -r requirements.txt (line 9))
-  Downloading botocore-1.40.70-py3-none-any.whl.metadata (5.7 kB)
-Requirement already satisfied: celery==5.5.3 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 10)) (5.5.3)
-Requirement already satisfied: certifi==2025.10.5 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 11)) (2025.10.5)
-Requirement already satisfied: charset-normalizer==3.4.4 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 12)) (3.4.4)
-Requirement already satisfied: click==8.3.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 13)) (8.3.0)
-Requirement already satisfied: click-didyoumean==0.3.1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 14)) (0.3.1)
-Requirement already satisfied: click-plugins==1.1.1.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 15)) (1.1.1.2)
-Requirement already satisfied: click-repl==0.3.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 16)) (0.3.0)
-Collecting fastapi==0.104.1 (from -r requirements.txt (line 17))
-  Downloading fastapi-0.104.1-py3-none-any.whl.metadata (24 kB)
-Collecting filelock==3.20.0 (from -r requirements.txt (line 18))
-  Downloading filelock-3.20.0-py3-none-any.whl.metadata (2.1 kB)
-Collecting fsspec==2025.10.0 (from -r requirements.txt (line 19))
-  Downloading fsspec-2025.10.0-py3-none-any.whl.metadata (10 kB)
-Requirement already satisfied: greenlet==3.2.4 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 20)) (3.2.4)
-Requirement already satisfied: h11==0.16.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 21)) (0.16.0)
-Collecting hf-xet==1.2.0 (from -r requirements.txt (line 22))
-  Downloading hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
-Collecting huggingface-hub==0.36.0 (from -r requirements.txt (line 23))
-  Downloading huggingface_hub-0.36.0-py3-none-any.whl.metadata (14 kB)
-Requirement already satisfied: idna==3.11 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 24)) (3.11)
-Collecting iniconfig==2.3.0 (from -r requirements.txt (line 25))
-  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
-Collecting isort==5.13.2 (from -r requirements.txt (line 26))
-  Downloading isort-5.13.2-py3-none-any.whl.metadata (12 kB)
-Requirement already satisfied: Jinja2==3.1.6 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 27)) (3.1.6)
-Requirement already satisfied: jmespath==1.0.1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 28)) (1.0.1)
-Collecting joblib==1.5.2 (from -r requirements.txt (line 29))
-  Downloading joblib-1.5.2-py3-none-any.whl.metadata (5.6 kB)
-Requirement already satisfied: kombu==5.5.4 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 30)) (5.5.4)
-Requirement already satisfied: Mako==1.3.10 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 31)) (1.3.10)
-Requirement already satisfied: MarkupSafe==3.0.3 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 32)) (3.0.3)
-Collecting mpmath==1.3.0 (from -r requirements.txt (line 33))
-  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
-Collecting mypy==1.18.2 (from -r requirements.txt (line 34))
-  Downloading mypy-1.18.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.2 kB)
-Collecting mypy_extensions==1.1.0 (from -r requirements.txt (line 35))
-  Downloading mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
-Collecting networkx==3.5 (from -r requirements.txt (line 36))
-  Downloading networkx-3.5-py3-none-any.whl.metadata (6.3 kB)
-Requirement already satisfied: numpy==2.3.4 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 37)) (2.3.4)
-Collecting nvidia-cublas-cu12==12.6.4.1 (from -r requirements.txt (line 38))
-  Downloading nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-cuda-cupti-cu12==12.6.80 (from -r requirements.txt (line 39))
-  Downloading nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
-Collecting nvidia-cuda-nvrtc-cu12==12.6.77 (from -r requirements.txt (line 40))
-  Downloading nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-cuda-runtime-cu12==12.6.77 (from -r requirements.txt (line 41))
-  Downloading nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-cudnn-cu12==9.5.1.17 (from -r requirements.txt (line 42))
-  Downloading nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl.metadata (1.6 kB)
-Collecting nvidia-cufft-cu12==11.3.0.4 (from -r requirements.txt (line 43))
-  Downloading nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-cufile-cu12==1.11.1.6 (from -r requirements.txt (line 44))
-  Downloading nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-curand-cu12==10.3.7.77 (from -r requirements.txt (line 45))
-  Downloading nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-cusolver-cu12==11.7.1.2 (from -r requirements.txt (line 46))
-  Downloading nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
-Collecting nvidia-cusparse-cu12==12.5.4.2 (from -r requirements.txt (line 47))
-  Downloading nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
-Collecting nvidia-cusparselt-cu12==0.6.3 (from -r requirements.txt (line 48))
-  Downloading nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl.metadata (6.8 kB)
-Collecting nvidia-nccl-cu12==2.26.2 (from -r requirements.txt (line 49))
-  Downloading nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.0 kB)
-Collecting nvidia-nvjitlink-cu12==12.6.85 (from -r requirements.txt (line 50))
-  Downloading nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.5 kB)
-Collecting nvidia-nvtx-cu12==12.6.77 (from -r requirements.txt (line 51))
-  Downloading nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
-Requirement already satisfied: packaging==25.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 52)) (25.0)
-Collecting pathspec==0.12.1 (from -r requirements.txt (line 53))
-  Downloading pathspec-0.12.1-py3-none-any.whl.metadata (21 kB)
-Requirement already satisfied: pgvector==0.2.5 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 54)) (0.2.5)
-Collecting platformdirs==4.5.0 (from -r requirements.txt (line 55))
-  Downloading platformdirs-4.5.0-py3-none-any.whl.metadata (12 kB)
-Collecting pluggy==1.6.0 (from -r requirements.txt (line 56))
-  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
-Requirement already satisfied: prompt_toolkit==3.0.52 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 57)) (3.0.52)
-Requirement already satisfied: psycopg2-binary==2.9.11 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 58)) (2.9.11)
-Requirement already satisfied: pydantic==2.12.4 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 59)) (2.12.4)
-Requirement already satisfied: pydantic_core==2.41.5 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 60)) (2.41.5)
-Collecting PyJWT==2.10.1 (from -r requirements.txt (line 61))
-  Downloading PyJWT-2.10.1-py3-none-any.whl.metadata (4.0 kB)
-Collecting pytest==7.4.4 (from -r requirements.txt (line 62))
-  Downloading pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)
-Requirement already satisfied: python-dateutil==2.9.0.post0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 63)) (2.9.0.post0)
-Collecting python-multipart==0.0.6 (from -r requirements.txt (line 64))
-  Downloading python_multipart-0.0.6-py3-none-any.whl.metadata (2.5 kB)
-Collecting pdfminer.six==20240706 (from -r requirements.txt (line 65))
-  Downloading pdfminer.six-20240706-py3-none-any.whl.metadata (4.1 kB)
-Collecting python-docx==1.1.2 (from -r requirements.txt (line 66))
-  Downloading python_docx-1.1.2-py3-none-any.whl.metadata (2.0 kB)
-Requirement already satisfied: PyYAML==6.0.3 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 67)) (6.0.3)
-Collecting redis==5.3.1 (from -r requirements.txt (line 68))
-  Downloading redis-5.3.1-py3-none-any.whl.metadata (9.2 kB)
-Collecting regex==2025.11.3 (from -r requirements.txt (line 69))
-  Downloading regex-2025.11.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.5/40.5 kB 699.9 kB/s eta 0:00:00
-Requirement already satisfied: requests==2.32.5 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 70)) (2.32.5)
-Collecting ruff==0.1.15 (from -r requirements.txt (line 71))
-  Downloading ruff-0.1.15-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (22 kB)
-Requirement already satisfied: s3transfer==0.14.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 72)) (0.14.0)
-Collecting safetensors==0.6.2 (from -r requirements.txt (line 73))
-  Downloading safetensors-0.6.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
-Collecting scikit-learn==1.7.2 (from -r requirements.txt (line 74))
-  Downloading scikit_learn-1.7.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (11 kB)
-Collecting scipy==1.16.3 (from -r requirements.txt (line 75))
-  Downloading scipy-1.16.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (62 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.0/62.0 kB 926.0 kB/s eta 0:00:00
-Collecting sentence-transformers==2.7.0 (from -r requirements.txt (line 76))
-  Downloading sentence_transformers-2.7.0-py3-none-any.whl.metadata (11 kB)
-Collecting setuptools==80.9.0 (from -r requirements.txt (line 77))
-  Downloading setuptools-80.9.0-py3-none-any.whl.metadata (6.6 kB)
-Requirement already satisfied: six==1.17.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 78)) (1.17.0)
-Requirement already satisfied: sniffio==1.3.1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 79)) (1.3.1)
-Requirement already satisfied: SQLAlchemy==2.0.44 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 80)) (2.0.44)
-Collecting starlette==0.27.0 (from -r requirements.txt (line 81))
-  Downloading starlette-0.27.0-py3-none-any.whl.metadata (5.8 kB)
-Collecting sympy==1.14.0 (from -r requirements.txt (line 82))
-  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
-Collecting threadpoolctl==3.6.0 (from -r requirements.txt (line 83))
-  Downloading threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
-Collecting tokenizers==0.22.1 (from -r requirements.txt (line 84))
-  Downloading tokenizers-0.22.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
-Collecting torch==2.7.1 (from -r requirements.txt (line 85))
-  Downloading torch-2.7.1-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (29 kB)
-Collecting tqdm==4.67.1 (from -r requirements.txt (line 86))
-  Downloading tqdm-4.67.1-py3-none-any.whl.metadata (57 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 57.7/57.7 kB 1.3 MB/s eta 0:00:00
-Collecting transformers==4.57.1 (from -r requirements.txt (line 87))
-  Downloading transformers-4.57.1-py3-none-any.whl.metadata (43 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.0/44.0 kB 1.2 MB/s eta 0:00:00
-Collecting triton==3.3.1 (from -r requirements.txt (line 88))
-  Downloading triton-3.3.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (1.5 kB)
-Requirement already satisfied: typing-inspection==0.4.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 89)) (0.4.2)
-Requirement already satisfied: typing_extensions==4.15.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 90)) (4.15.0)
-Requirement already satisfied: tzdata==2025.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 91)) (2025.2)
-Requirement already satisfied: urllib3==2.5.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 92)) (2.5.0)
-Requirement already satisfied: uvicorn==0.24.0.post1 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 93)) (0.24.0.post1)
-Requirement already satisfied: vine==5.1.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 94)) (5.1.0)
-Requirement already satisfied: wcwidth==0.2.14 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 95)) (0.2.14)
-Collecting openai==1.59.3 (from -r requirements.txt (line 96))
-  Downloading openai-1.59.3-py3-none-any.whl.metadata (27 kB)
-Collecting pytesseract==0.3.10 (from -r requirements.txt (line 97))
-  Downloading pytesseract-0.3.10-py3-none-any.whl.metadata (11 kB)
-Requirement already satisfied: pdf2image==1.17.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 98)) (1.17.0)
-Collecting Pillow==10.2.0 (from -r requirements.txt (line 99))
-  Downloading pillow-10.2.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (9.7 kB)
-Collecting reportlab==4.0.9 (from -r requirements.txt (line 100))
-  Downloading reportlab-4.0.9-py3-none-any.whl.metadata (1.4 kB)
-Requirement already satisfied: async-timeout>=4.0.3 in /usr/local/lib/python3.11/site-packages (from asyncpg==0.29.0->-r requirements.txt (line 5)) (5.0.1)
-Requirement already satisfied: cryptography>=36.0.0 in /usr/local/lib/python3.11/site-packages (from pdfminer.six==20240706->-r requirements.txt (line 65)) (46.0.3)
-Requirement already satisfied: lxml>=3.1.0 in /usr/local/lib/python3.11/site-packages (from python-docx==1.1.2->-r requirements.txt (line 66)) (6.0.2)
-Collecting distro<2,>=1.7.0 (from openai==1.59.3->-r requirements.txt (line 96))
-  Downloading distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
-Requirement already satisfied: httpx<1,>=0.23.0 in /usr/local/lib/python3.11/site-packages (from openai==1.59.3->-r requirements.txt (line 96)) (0.25.2)
-Collecting jiter<1,>=0.4.0 (from openai==1.59.3->-r requirements.txt (line 96))
-  Downloading jiter-0.12.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.2 kB)
-Collecting chardet (from reportlab==4.0.9->-r requirements.txt (line 100))
-  Downloading chardet-5.2.0-py3-none-any.whl.metadata (3.4 kB)
-Requirement already satisfied: cffi>=2.0.0 in /usr/local/lib/python3.11/site-packages (from cryptography>=36.0.0->pdfminer.six==20240706->-r requirements.txt (line 65)) (2.0.0)
-Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.11/site-packages (from httpx<1,>=0.23.0->openai==1.59.3->-r requirements.txt (line 96)) (1.0.9)
-Requirement already satisfied: pycparser in /usr/local/lib/python3.11/site-packages (from cffi>=2.0.0->cryptography>=36.0.0->pdfminer.six==20240706->-r requirements.txt (line 65)) (2.23)
-Downloading black-23.12.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 1.2 MB/s eta 0:00:00
-Downloading boto3-1.40.70-py3-none-any.whl (139 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 139.4/139.4 kB 1.9 MB/s eta 0:00:00
-Downloading botocore-1.40.70-py3-none-any.whl (14.1 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.1/14.1 MB 1.3 MB/s eta 0:00:00
-Downloading fastapi-0.104.1-py3-none-any.whl (92 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.9/92.9 kB 1.2 MB/s eta 0:00:00
-Downloading filelock-3.20.0-py3-none-any.whl (16 kB)
-Downloading fsspec-2025.10.0-py3-none-any.whl (200 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 201.0/201.0 kB 1.0 MB/s eta 0:00:00
-Downloading hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 1.1 MB/s eta 0:00:00
-Downloading huggingface_hub-0.36.0-py3-none-any.whl (566 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 566.1/566.1 kB 1.4 MB/s eta 0:00:00
-Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
-Downloading isort-5.13.2-py3-none-any.whl (92 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.3/92.3 kB 1.5 MB/s eta 0:00:00
-Downloading joblib-1.5.2-py3-none-any.whl (308 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 308.4/308.4 kB 1.6 MB/s eta 0:00:00
-Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 1.5 MB/s eta 0:00:00
-Downloading mypy-1.18.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (13.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.2/13.2 MB 1.1 MB/s eta 0:00:00
-Downloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
-Downloading networkx-3.5-py3-none-any.whl (2.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 1.5 MB/s eta 0:00:00
-Downloading nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (393.1 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 393.1/393.1 MB 792.9 kB/s eta 0:00:00
-Downloading nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.9 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9/8.9 MB 1.1 MB/s eta 0:00:00
-Downloading nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl (23.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.7/23.7 MB 1.3 MB/s eta 0:00:00
-Downloading nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (897 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 897.7/897.7 kB 2.7 MB/s eta 0:00:00
-Downloading nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl (571.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 571.0/571.0 MB 712.5 kB/s eta 0:00:00
-Downloading nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (200.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 200.2/200.2 MB 995.0 kB/s eta 0:00:00
-Downloading nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.1 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 1.3 MB/s eta 0:00:00
-Downloading nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (56.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 56.3/56.3 MB 1.3 MB/s eta 0:00:00
-Downloading nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (158.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 158.2/158.2 MB 1.2 MB/s eta 0:00:00
-Downloading nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (216.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 216.6/216.6 MB 703.8 kB/s eta 0:00:00
-Downloading nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl (156.8 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 156.8/156.8 MB 1.0 MB/s eta 0:00:00
-Downloading nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (201.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 201.3/201.3 MB 581.1 kB/s eta 0:00:00
-Downloading nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (19.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 19.7/19.7 MB 1.5 MB/s eta 0:00:00
-Downloading nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (89 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 89.3/89.3 kB 1.0 MB/s eta 0:00:00
-Downloading pathspec-0.12.1-py3-none-any.whl (31 kB)
-Downloading platformdirs-4.5.0-py3-none-any.whl (18 kB)
-Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
-Downloading PyJWT-2.10.1-py3-none-any.whl (22 kB)
-Downloading pytest-7.4.4-py3-none-any.whl (325 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 325.3/325.3 kB 1.5 MB/s eta 0:00:00
-Downloading python_multipart-0.0.6-py3-none-any.whl (45 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.7/45.7 kB 1.2 MB/s eta 0:00:00
-Downloading pdfminer.six-20240706-py3-none-any.whl (5.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 1.6 MB/s eta 0:00:00
-Downloading python_docx-1.1.2-py3-none-any.whl (244 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 244.3/244.3 kB 2.1 MB/s eta 0:00:00
-Downloading redis-5.3.1-py3-none-any.whl (272 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 272.8/272.8 kB 2.1 MB/s eta 0:00:00
-Downloading regex-2025.11.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (800 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 800.4/800.4 kB 2.0 MB/s eta 0:00:00
-Downloading ruff-0.1.15-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (7.5 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.5/7.5 MB 2.2 MB/s eta 0:00:00
-Downloading safetensors-0.6.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (485 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 485.8/485.8 kB 2.1 MB/s eta 0:00:00
-Downloading scikit_learn-1.7.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.7/9.7 MB 1.6 MB/s eta 0:00:00
-Downloading scipy-1.16.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (35.9 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.9/35.9 MB 2.0 MB/s eta 0:00:00
-Downloading sentence_transformers-2.7.0-py3-none-any.whl (171 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 171.5/171.5 kB 2.2 MB/s eta 0:00:00
-Downloading setuptools-80.9.0-py3-none-any.whl (1.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 1.5 MB/s eta 0:00:00
-Downloading starlette-0.27.0-py3-none-any.whl (66 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 67.0/67.0 kB 1.8 MB/s eta 0:00:00
-Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 1.3 MB/s eta 0:00:00
-Downloading threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
-Downloading tokenizers-0.22.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 1.5 MB/s eta 0:00:00
-Downloading torch-2.7.1-cp311-cp311-manylinux_2_28_x86_64.whl (821.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 821.2/821.2 MB 539.0 kB/s eta 0:00:00
-Downloading tqdm-4.67.1-py3-none-any.whl (78 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.5/78.5 kB 1.2 MB/s eta 0:00:00
-Downloading transformers-4.57.1-py3-none-any.whl (12.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 1.6 MB/s eta 0:00:00
-Downloading triton-3.3.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (155.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.7/155.7 MB 1.6 MB/s eta 0:00:00
-Downloading openai-1.59.3-py3-none-any.whl (454 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 454.8/454.8 kB 1.3 MB/s eta 0:00:00
-Downloading pytesseract-0.3.10-py3-none-any.whl (14 kB)
-Downloading pillow-10.2.0-cp311-cp311-manylinux_2_28_x86_64.whl (4.5 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 1.1 MB/s eta 0:00:00
-Downloading reportlab-4.0.9-py3-none-any.whl (1.9 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 1.3 MB/s eta 0:00:00
-Downloading distro-1.9.0-py3-none-any.whl (20 kB)
-Downloading jiter-0.12.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (364 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 364.6/364.6 kB 1.0 MB/s eta 0:00:00
-Downloading chardet-5.2.0-py3-none-any.whl (199 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 199.4/199.4 kB 1.2 MB/s eta 0:00:00
-Installing collected packages: nvidia-cusparselt-cu12, mpmath, tqdm, threadpoolctl, sympy, setuptools, scipy, safetensors, ruff, regex, python-multipart, python-docx, PyJWT, pluggy, platformdirs, Pillow, pathspec, nvidia-nvtx-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, mypy_extensions, joblib, jiter, isort, iniconfig, hf-xet, fsspec, filelock, distro, chardet, triton, starlette, scikit-learn, reportlab, redis, pytest, pytesseract, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, mypy, huggingface-hub, botocore, black, tokenizers, pdfminer.six, openai, nvidia-cusolver-cu12, fastapi, transformers, torch, boto3, sentence-transformers
-  Attempting uninstall: setuptools
-    Found existing installation: setuptools 79.0.1
-    Uninstalling setuptools-79.0.1:
-      Successfully uninstalled setuptools-79.0.1
-  Attempting uninstall: python-multipart
-    Found existing installation: python-multipart 0.0.7
-    Uninstalling python-multipart-0.0.7:
-      Successfully uninstalled python-multipart-0.0.7
-  Attempting uninstall: python-docx
-    Found existing installation: python-docx 1.2.0
-    Uninstalling python-docx-1.2.0:
-      Successfully uninstalled python-docx-1.2.0
-  Attempting uninstall: PyJWT
-    Found existing installation: PyJWT 2.8.0
-    Uninstalling PyJWT-2.8.0:
-      Successfully uninstalled PyJWT-2.8.0
-  Attempting uninstall: platformdirs
-    Found existing installation: platformdirs 4.5.1
-    Uninstalling platformdirs-4.5.1:
-      Successfully uninstalled platformdirs-4.5.1
-  Attempting uninstall: Pillow
-    Found existing installation: pillow 12.0.0
-    Uninstalling pillow-12.0.0:
-      Successfully uninstalled pillow-12.0.0
-  Attempting uninstall: filelock
-    Found existing installation: filelock 3.20.1
-    Uninstalling filelock-3.20.1:
-      Successfully uninstalled filelock-3.20.1
-  Attempting uninstall: starlette
-    Found existing installation: starlette 0.37.2
-    Uninstalling starlette-0.37.2:
-      Successfully uninstalled starlette-0.37.2
-  Attempting uninstall: reportlab
-    Found existing installation: reportlab 4.4.4
-    Uninstalling reportlab-4.4.4:
-      Successfully uninstalled reportlab-4.4.4
-  Attempting uninstall: redis
-    Found existing installation: redis 5.2.1
-    Uninstalling redis-5.2.1:
-      Successfully uninstalled redis-5.2.1
-  Attempting uninstall: pytesseract
-    Found existing installation: pytesseract 0.3.13
-    Uninstalling pytesseract-0.3.13:
-      Successfully uninstalled pytesseract-0.3.13
-  Attempting uninstall: botocore
-    Found existing installation: botocore 1.40.74
-    Uninstalling botocore-1.40.74:
-      Successfully uninstalled botocore-1.40.74
-  Attempting uninstall: pdfminer.six
-    Found existing installation: pdfminer.six 20221105
-    Uninstalling pdfminer.six-20221105:
-      Successfully uninstalled pdfminer.six-20221105
-  Attempting uninstall: fastapi
-    Found existing installation: fastapi 0.111.1
-    Uninstalling fastapi-0.111.1:
-      Successfully uninstalled fastapi-0.111.1
-  Attempting uninstall: boto3
-    Found existing installation: boto3 1.40.74
-    Uninstalling boto3-1.40.74:
-      Successfully uninstalled boto3-1.40.74
-[91mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-fastapi-users 12.1.3 requires pyjwt[crypto]==2.8.0, but you have pyjwt 2.10.1 which is incompatible.
-fastapi-users 12.1.3 requires python-multipart==0.0.7, but you have python-multipart 0.0.6 which is incompatible.
-[0mSuccessfully installed Pillow-10.2.0 PyJWT-2.10.1 black-23.12.1 boto3-1.40.70 botocore-1.40.70 chardet-5.2.0 distro-1.9.0 fastapi-0.104.1 filelock-3.20.0 fsspec-2025.10.0 hf-xet-1.2.0 huggingface-hub-0.36.0 iniconfig-2.3.0 isort-5.13.2 jiter-0.12.0 joblib-1.5.2 mpmath-1.3.0 mypy-1.18.2 mypy_extensions-1.1.0 networkx-3.5 nvidia-cublas-cu12-12.6.4.1 nvidia-cuda-cupti-cu12-12.6.80 nvidia-cuda-nvrtc-cu12-12.6.77 nvidia-cuda-runtime-cu12-12.6.77 nvidia-cudnn-cu12-9.5.1.17 nvidia-cufft-cu12-11.3.0.4 nvidia-cufile-cu12-1.11.1.6 nvidia-curand-cu12-10.3.7.77 nvidia-cusolver-cu12-11.7.1.2 nvidia-cusparse-cu12-12.5.4.2 nvidia-cusparselt-cu12-0.6.3 nvidia-nccl-cu12-2.26.2 nvidia-nvjitlink-cu12-12.6.85 nvidia-nvtx-cu12-12.6.77 openai-1.59.3 pathspec-0.12.1 pdfminer.six-20240706 platformdirs-4.5.0 pluggy-1.6.0 pytesseract-0.3.10 pytest-7.4.4 python-docx-1.1.2 python-multipart-0.0.6 redis-5.3.1 regex-2025.11.3 reportlab-4.0.9 ruff-0.1.15 safetensors-0.6.2 scikit-learn-1.7.2 scipy-1.16.3 sentence-transformers-2.7.0 setuptools-80.9.0 starlette-0.27.0 sympy-1.14.0 threadpoolctl-3.6.0 tokenizers-0.22.1 torch-2.7.1 tqdm-4.67.1 transformers-4.57.1 triton-3.3.1
-[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
-[0m[91m
-[notice] A new release of pip is available: 24.0 -> 25.3
-[notice] To update, run: pip install --upgrade pip
-[0m ---> Removed intermediate container ab3a083a2c48
- ---> ae74caa4fdde
-Step 9/11 : COPY backend/ .
- ---> 3d757f0371f9
-Step 10/11 : CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
- ---> Running in 5af48e054f05
- ---> Removed intermediate container 5af48e054f05
- ---> 9de74f8a557c
-Step 11/11 : LABEL com.docker.compose.image.builder=classic
- ---> Running in 758c76cbfb8f
- ---> Removed intermediate container 758c76cbfb8f
- ---> bd712017984a
-Successfully built bd712017984a
-Successfully tagged plagiarism-detection-api:latest
-Sending build context to Docker daemon  530.1kBSending build context to Docker daemon  530.1kBSending build context to Docker daemon  530.1kBSending build context to Docker daemon  1.579MBSending build context to Docker daemon  2.104MBSending build context to Docker daemon  2.104MBSending build context to Docker daemon  2.104MBSending build context to Docker daemon  2.628MBSending build context to Docker daemon  2.628MBSending build context to Docker daemon  2.628MBSending build context to Docker daemon  3.153MBSending build context to Docker daemon  3.153MBSending build context to Docker daemon  3.153MBSending build context to Docker daemon  3.677MBSending build context to Docker daemon  3.677MBSending build context to Docker daemon  3.677MBSending build context to Docker daemon  4.201MBSending build context to Docker daemon  4.201MBSending build context to Docker daemon  4.201MBSending build context to Docker daemon  4.726MBSending build context to Docker daemon  4.726MBSending build context to Docker daemon  4.726MBSending build context to Docker daemon   5.25MBSending build context to Docker daemon   5.25MBSending build context to Docker daemon   5.25MBSending build context to Docker daemon  5.775MBSending build context to Docker daemon  5.775MBSending build context to Docker daemon  5.775MBSending build context to Docker daemon  6.299MBSending build context to Docker daemon  6.299MBSending build context to Docker daemon  6.299MBSending build context to Docker daemon  6.823MBSending build context to Docker daemon  6.823MBSending build context to Docker daemon  6.823MBSending build context to Docker daemon  7.348MBSending build context to Docker daemon  7.348MBSending build context to Docker daemon  7.348MBSending build context to Docker daemon  7.872MBSending build context to Docker daemon  7.872MBSending build context to Docker daemon  7.872MBSending build context to Docker daemon  8.397MBSending build context to Docker daemon  8.397MBSending build context to Docker daemon  8.397MBSending build context to Docker daemon  8.921MBSending build context to Docker daemon  8.921MBSending build context to Docker daemon  8.921MBSending build context to Docker daemon  9.445MBSending build context to Docker daemon  9.445MBSending build context to Docker daemon  9.445MBSending build context to Docker daemon   9.97MBSending build context to Docker daemon   9.97MBSending build context to Docker daemon   9.97MBSending build context to Docker daemon  10.49MBSending build context to Docker daemon  10.49MBSending build context to Docker daemon  10.49MBSending build context to Docker daemon  11.02MBSending build context to Docker daemon  11.02MBSending build context to Docker daemon  11.02MBSending build context to Docker daemon  11.54MBSending build context to Docker daemon  11.54MBSending build context to Docker daemon  11.54MBSending build context to Docker daemon  12.07MBSending build context to Docker daemon  12.07MBSending build context to Docker daemon  12.07MBSending build context to Docker daemon  12.59MBSending build context to Docker daemon  12.59MBSending build context to Docker daemon  12.59MBSending build context to Docker daemon  13.12MBSending build context to Docker daemon  13.12MBSending build context to Docker daemon  13.12MBSending build context to Docker daemon  13.64MBSending build context to Docker daemon  13.64MBSending build context to Docker daemon  13.64MBSending build context to Docker daemon  14.16MBSending build context to Docker daemon  14.16MBSending build context to Docker daemon  14.16MBSending build context to Docker daemon  14.69MBSending build context to Docker daemon  14.69MBSending build context to Docker daemon  14.69MBSending build context to Docker daemon  15.21MBSending build context to Docker daemon  15.21MBSending build context to Docker daemon  15.21MBSending build context to Docker daemon  15.74MBSending build context to Docker daemon  15.74MBSending build context to Docker daemon  15.74MBSending build context to Docker daemon  16.26MBSending build context to Docker daemon  16.26MBSending build context to Docker daemon  16.26MBSending build context to Docker daemon  16.79MBSending build context to Docker daemon  16.79MBSending build context to Docker daemon  16.79MBSending build context to Docker daemon  17.31MBSending build context to Docker daemon  17.31MBSending build context to Docker daemon  17.31MBSending build context to Docker daemon  17.84MBSending build context to Docker daemon  17.84MBSending build context to Docker daemon  17.84MBSending build context to Docker daemon  18.36MBSending build context to Docker daemon  18.36MBSending build context to Docker daemon  18.36MBSending build context to Docker daemon  18.88MBSending build context to Docker daemon  18.88MBSending build context to Docker daemon  18.88MBSending build context to Docker daemon  19.41MBSending build context to Docker daemon  19.41MBSending build context to Docker daemon  19.41MBSending build context to Docker daemon  19.93MBSending build context to Docker daemon  19.93MBSending build context to Docker daemon  19.93MBSending build context to Docker daemon  20.46MBSending build context to Docker daemon  20.46MBSending build context to Docker daemon  20.46MBSending build context to Docker daemon  20.98MBSending build context to Docker daemon  20.98MBSending build context to Docker daemon  20.98MBSending build context to Docker daemon  21.51MBSending build context to Docker daemon  21.51MBSending build context to Docker daemon  21.51MBSending build context to Docker daemon  22.03MBSending build context to Docker daemon  22.03MBSending build context to Docker daemon  22.03MBSending build context to Docker daemon  22.56MBSending build context to Docker daemon  22.56MBSending build context to Docker daemon  22.56MBSending build context to Docker daemon  23.08MBSending build context to Docker daemon  23.08MBSending build context to Docker daemon  23.08MBSending build context to Docker daemon   23.6MBSending build context to Docker daemon   23.6MBSending build context to Docker daemon   23.6MBSending build context to Docker daemon  24.13MBSending build context to Docker daemon  24.13MBSending build context to Docker daemon  24.13MBSending build context to Docker daemon  24.65MBSending build context to Docker daemon  24.65MBSending build context to Docker daemon  24.65MBSending build context to Docker daemon  25.18MBSending build context to Docker daemon  25.18MBSending build context to Docker daemon  25.18MBSending build context to Docker daemon   25.7MBSending build context to Docker daemon   25.7MBSending build context to Docker daemon   25.7MBSending build context to Docker daemon  26.23MBSending build context to Docker daemon  26.23MBSending build context to Docker daemon  26.23MBSending build context to Docker daemon  26.75MBSending build context to Docker daemon  26.75MBSending build context to Docker daemon  26.75MBSending build context to Docker daemon  27.27MBSending build context to Docker daemon  27.27MBSending build context to Docker daemon  27.27MBSending build context to Docker daemon   27.8MBSending build context to Docker daemon   27.8MBSending build context to Docker daemon   27.8MBSending build context to Docker daemon  28.32MBSending build context to Docker daemon  28.32MBSending build context to Docker daemon  28.32MBSending build context to Docker daemon  28.85MBSending build context to Docker daemon  28.85MBSending build context to Docker daemon  28.85MBSending build context to Docker daemon  29.37MBSending build context to Docker daemon  29.37MBSending build context to Docker daemon  29.37MBSending build context to Docker daemon   29.9MBSending build context to Docker daemon   29.9MBSending build context to Docker daemon   29.9MBSending build context to Docker daemon  30.42MBSending build context to Docker daemon  30.42MBSending build context to Docker daemon  30.42MBSending build context to Docker daemon  30.95MBSending build context to Docker daemon  30.95MBSending build context to Docker daemon  30.95MBSending build context to Docker daemon  31.47MBSending build context to Docker daemon  31.47MBSending build context to Docker daemon  31.47MBSending build context to Docker daemon  31.99MBSending build context to Docker daemon  31.99MBSending build context to Docker daemon  31.99MBSending build context to Docker daemon  32.52MBSending build context to Docker daemon  32.52MBSending build context to Docker daemon  32.52MBSending build context to Docker daemon  33.04MBSending build context to Docker daemon  33.04MBSending build context to Docker daemon  33.04MBSending build context to Docker daemon  33.57MBSending build context to Docker daemon  33.57MBSending build context to Docker daemon  33.57MBSending build context to Docker daemon  34.09MBSending build context to Docker daemon  34.09MBSending build context to Docker daemon  34.09MBSending build context to Docker daemon  34.62MBSending build context to Docker daemon  34.62MBSending build context to Docker daemon  34.62MBSending build context to Docker daemon  35.14MBSending build context to Docker daemon  35.14MBSending build context to Docker daemon  35.14MBSending build context to Docker daemon  35.67MBSending build context to Docker daemon  35.67MBSending build context to Docker daemon  35.67MBSending build context to Docker daemon  36.19MBSending build context to Docker daemon  36.19MBSending build context to Docker daemon  36.19MBSending build context to Docker daemon  36.71MBSending build context to Docker daemon  36.71MBSending build context to Docker daemon  36.71MBSending build context to Docker daemon  37.24MBSending build context to Docker daemon  37.24MBSending build context to Docker daemon  37.24MBSending build context to Docker daemon  37.76MBSending build context to Docker daemon  37.76MBSending build context to Docker daemon  37.76MBSending build context to Docker daemon  38.29MBSending build context to Docker daemon  38.29MBSending build context to Docker daemon  38.29MBSending build context to Docker daemon  38.81MBSending build context to Docker daemon  38.81MBSending build context to Docker daemon  38.81MBSending build context to Docker daemon  39.34MBSending build context to Docker daemon  39.34MBSending build context to Docker daemon  39.34MBSending build context to Docker daemon  39.86MBSending build context to Docker daemon  39.86MBSending build context to Docker daemon  39.86MBSending build context to Docker daemon  40.38MBSending build context to Docker daemon  40.38MBSending build context to Docker daemon  40.38MBSending build context to Docker daemon  40.91MBSending build context to Docker daemon  40.91MBSending build context to Docker daemon  40.91MBSending build context to Docker daemon  41.43MBSending build context to Docker daemon  41.43MBSending build context to Docker daemon  41.43MBSending build context to Docker daemon  41.96MBSending build context to Docker daemon  41.96MBSending build context to Docker daemon  41.96MBSending build context to Docker daemon  42.48MBSending build context to Docker daemon  42.48MBSending build context to Docker daemon  42.48MBSending build context to Docker daemon  43.01MBSending build context to Docker daemon  43.01MBSending build context to Docker daemon  43.01MBSending build context to Docker daemon  43.18MB
-Sending build context to Docker daemon  43.18MB
-Step 1/11 : FROM python:3.11-slim
- ---> cb352e69d7b6
-Step 2/11 : WORKDIR /app
- ---> Using cache
- ---> 6bd6890f63e3
-Step 3/11 : RUN apt-get update && apt-get install -y     tesseract-ocr     libtesseract-dev     poppler-utils     && rm -rf /var/lib/apt/lists/*
- ---> Using cache
- ---> b16ef52c62ab
-Step 4/11 : RUN pip install --no-cache-dir poetry
- ---> Using cache
- ---> e260cf0d0e46
-Step 5/11 : COPY backend/pyproject.toml backend/poetry.lock ./
- ---> Using cache
- ---> e28ae6914b02
-Step 6/11 : RUN poetry config virtualenvs.create false     && poetry install --no-root --only main
- ---> Using cache
- ---> b0d3e0bb4e3e
-Step 7/11 : COPY backend/requirements.txt .
-Sending build context to Docker daemon  43.18MB
- ---> Using cache
- ---> 87c2f9bbf417
-Step 8/11 : RUN pip install --default-timeout=1000 -r requirements.txt
- ---> Using cache
- ---> ae74caa4fdde
-Step 9/11 : COPY backend/ .
-Step 1/12 : FROM node:18-alpine as builder
-Step 1/11 : FROM python:3.11-slim ---> Using cache
- ---> 3d757f0371f9
-Step 10/11 : CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
- ---> cb352e69d7b6
-Step 2/11 : WORKDIR /app
- ---> Using cache
- ---> 6bd6890f63e3
-Step 3/11 : RUN apt-get update && apt-get install -y     tesseract-ocr     libtesseract-dev     poppler-utils     && rm -rf /var/lib/apt/lists/*
- ---> Using cache
- ---> 9de74f8a557c
-Step 11/11 : LABEL com.docker.compose.image.builder=classic
- ---> Using cache
- ---> b16ef52c62ab
-Step 4/11 : RUN pip install --no-cache-dir poetry
- ---> Using cache
- ---> e260cf0d0e46
-Step 5/11 : COPY backend/pyproject.toml backend/poetry.lock ./
- ---> Using cache
- ---> bd712017984a
- ---> Using cache
- ---> e28ae6914b02
-Step 6/11 : RUN poetry config virtualenvs.create false     && poetry install --no-root --only main
- ---> Using cache
- ---> b0d3e0bb4e3e
-Step 7/11 : COPY backend/requirements.txt .
- ---> Using cache
- ---> 87c2f9bbf417
-Step 8/11 : RUN pip install --default-timeout=1000 -r requirements.txt
- ---> Using cache
- ---> ae74caa4fdde
-Step 9/11 : COPY backend/ .
- ---> Using cache
- ---> 3d757f0371f9
-Step 10/11 : CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
- ---> Using cache
- ---> 9de74f8a557c
-Step 11/11 : LABEL com.docker.compose.image.builder=classic
- ---> Using cache
- ---> bd712017984a
-Successfully built bd712017984a
-Successfully built bd712017984a
-Successfully tagged plagiarism-detection-celery-worker:latest
-Successfully tagged plagiarism-detection-celery-beat:latest
-18-alpine: Pulling from library/node
-
-[1A[2Kf18232174bc9: Already exists [1B
-[1A[2Kdd71dde834b5: Already exists [1B
-[1A[2K1e5a4c89cee5: Already exists [1B
-[1A[2K25ff2da83641: Already exists [1BDigest: sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
-Status: Downloaded newer image for node:18-alpine
- ---> ee77c6cd7c18
-Step 2/12 : WORKDIR /app
- ---> Running in 22e9ac0c0eca
- ---> Removed intermediate container 22e9ac0c0eca
- ---> 1ebaacd5a5ed
-Step 3/12 : COPY frontend/package.json frontend/package-lock.json ./
- ---> 6fe177effefe
-Step 4/12 : RUN npm ci
- ---> Running in 913ca9bbc11f
-[91mnpm warn EBADENGINE Unsupported engine {
-npm warn EBADENGINE   package: 'react-router@7.9.5',
-npm warn EBADENGINE   required: { node: '>=20.0.0' },
-npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
-npm warn EBADENGINE }
-[0m[91mnpm warn EBADENGINE Unsupported engine {
-npm warn EBADENGINE   package: 'react-router-dom@7.9.5',
-npm warn EBADENGINE   required: { node: '>=20.0.0' },
-npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
-npm warn EBADENGINE }
-[0m[91mnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
-[0m[91mnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-[0m[91mnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-[0m[91mnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-[0m[91mnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
-[0m[91mnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
-[0m
-added 400 packages, and audited 401 packages in 1m
-
-143 packages are looking for funding
-  run `npm fund` for details
-
-2 moderate severity vulnerabilities
-
-To address all issues (including breaking changes), run:
-  npm audit fix --force
-
-Run `npm audit` for details.
-[91mnpm notice
-npm notice New major version of npm available! 10.8.2 -> 11.7.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
-npm notice To update run: npm install -g npm@11.7.0
-npm notice
-[0m ---> Removed intermediate container 913ca9bbc11f
- ---> 9cd4e05c491c
-Step 5/12 : COPY frontend/ .
- ---> 67f5a6366f02
-Step 6/12 : RUN npm run build
- ---> Running in 1d32a098d927
-
-> frontend@0.0.0 build
-> tsc && vite build
-
-vite v5.4.21 building for production...
-transforming...
-✓ 52 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/index.html                   0.47 kB │ gzip:  0.30 kB
-dist/assets/index-uXXRjVqp.css    2.72 kB │ gzip:  1.07 kB
-dist/assets/index-Di2fGijL.js   202.74 kB │ gzip: 63.23 kB
-✓ built in 3.66s
- ---> Removed intermediate container 1d32a098d927
- ---> 22522b13cba0
-Step 7/12 : FROM nginx:alpine
-alpine: Pulling from library/nginx
-
-[1A[2K1074353eec0d: Pulling fs layer [1B
-[1A[2K25f453064fd3: Pulling fs layer [1B
-[1A[2K567f84da6fbd: Pulling fs layer [1B
-[1A[2Kda7c973d8b92: Pulling fs layer [1B
-[1A[2K33f95a0f3229: Pulling fs layer [1B
-[1A[2K085c5e5aaa8e: Pulling fs layer [1B
-[1A[2K0abf9e567266: Pulling fs layer [1B
-[1A[2Kde54cb821236: Pulling fs layer [1B[5A[2Kda7c973d8b92: Waiting [5B[4A[2K33f95a0f3229: Waiting [4B[3A[2K085c5e5aaa8e: Waiting [3B[2A[2K0abf9e567266: Waiting [2B[1A[2Kde54cb821236: Waiting [1B[8A[2K1074353eec0d: Downloading [>                                                  ]   39.7kB/3.86MB[8B[7A[2K25f453064fd3: Downloading [>                                                  ]  19.17kB/1.856MB[7B[6A[2K567f84da6fbd: Downloading [==================================================>]     626B/626B[6B[6A[2K567f84da6fbd: Verifying Checksum [6B[6A[2K567f84da6fbd: Download complete [6B[8A[2K1074353eec0d: Downloading [=>                                                 ]  124.7kB/3.86MB[8B[7A[2K25f453064fd3: Downloading [==>                                                ]  80.13kB/1.856MB[7B[8A[2K1074353eec0d: Downloading [====>                                              ]  344.1kB/3.86MB[8B[7A[2K25f453064fd3: Downloading [====>                                              ]  184.3kB/1.856MB[7B[8A[2K1074353eec0d: Downloading [=======>                                           ]  589.8kB/3.86MB[8B[7A[2K25f453064fd3: Downloading [==============>                                    ]  528.4kB/1.856MB[7B[8A[2K1074353eec0d: Downloading [============>                                      ]  933.9kB/3.86MB[8B[8A[2K1074353eec0d: Downloading [================>                                  ]  1.278MB/3.86MB[8B[7A[2K25f453064fd3: Downloading [=============================>                     ]  1.085MB/1.856MB[7B[8A[2K1074353eec0d: Downloading [=================>                                 ]  1.327MB/3.86MB[8B[7A[2K25f453064fd3: Downloading [====================================>              ]  1.348MB/1.856MB[7B[8A[2K1074353eec0d: Downloading [====================>                              ]  1.573MB/3.86MB[8B[7A[2K25f453064fd3: Downloading [=================================================> ]  1.835MB/1.856MB[7B[8A[2K1074353eec0d: Downloading [======================>                            ]  1.769MB/3.86MB[8B[8A[2K1074353eec0d: Downloading [==========================>                        ]  2.064MB/3.86MB[8B[7A[2K25f453064fd3: Downloading [==================================================>]  1.856MB/1.856MB[7B[7A[2K25f453064fd3: Verifying Checksum [7B[7A[2K25f453064fd3: Download complete [7B[8A[2K1074353eec0d: Downloading [===========================>                       ]  2.114MB/3.86MB[8B[8A[2K1074353eec0d: Downloading [============================>                      ]  2.163MB/3.86MB[8B[8A[2K1074353eec0d: Downloading [======================================>            ]  2.949MB/3.86MB[8B[8A[2K1074353eec0d: Downloading [========================================>          ]  3.097MB/3.86MB[8B[8A[2K1074353eec0d: Downloading [========================================>          ]  3.146MB/3.86MB[8B[8A[2K1074353eec0d: Downloading [===============================================>   ]  3.637MB/3.86MB[8B[8A[2K1074353eec0d: Verifying Checksum [8B[8A[2K1074353eec0d: Download complete [8B[8A[2K1074353eec0d: Extracting [>                                                  ]  65.54kB/3.86MB[8B[8A[2K1074353eec0d: Extracting [================>                                  ]  1.245MB/3.86MB[8B[8A[2K1074353eec0d: Extracting [===========================================>       ]  3.342MB/3.86MB[8B[8A[2K1074353eec0d: Extracting [==================================================>]   3.86MB/3.86MB[8B[8A[2K1074353eec0d: Extracting [==================================================>]   3.86MB/3.86MB[8B[8A[2K1074353eec0d: Pull complete [8B[7A[2K25f453064fd3: Extracting [>                                                  ]  32.77kB/1.856MB[7B[5A[2Kda7c973d8b92: Downloading [==================================================>]     953B/953B[5B[5A[2Kda7c973d8b92: Verifying Checksum [5B[5A[2Kda7c973d8b92: Download complete [5B[7A[2K25f453064fd3: Extracting [=================================>                 ]  1.245MB/1.856MB[7B[7A[2K25f453064fd3: Extracting [==================================================>]  1.856MB/1.856MB[7B[7A[2K25f453064fd3: Extracting [==================================================>]  1.856MB/1.856MB[7B[7A[2K25f453064fd3: Pull complete [7B[6A[2K567f84da6fbd: Extracting [==================================================>]     626B/626B[6B[6A[2K567f84da6fbd: Extracting [==================================================>]     626B/626B[6B[6A[2K567f84da6fbd: Pull complete [6B[5A[2Kda7c973d8b92: Extracting [==================================================>]     953B/953B[5B[5A[2Kda7c973d8b92: Extracting [==================================================>]     953B/953B[5B[5A[2Kda7c973d8b92: Pull complete [5B[4A[2K33f95a0f3229: Downloading [==================================================>]     403B/403B[4B[4A[2K33f95a0f3229: Download complete [4B[4A[2K33f95a0f3229: Extracting [==================================================>]     403B/403B[4B[4A[2K33f95a0f3229: Extracting [==================================================>]     403B/403B[4B[4A[2K33f95a0f3229: Pull complete [4B[3A[2K085c5e5aaa8e: Downloading [=======================================>           ]     953B/1.208kB[3B[3A[2K085c5e5aaa8e: Downloading [==================================================>]  1.208kB/1.208kB[3B[3A[2K085c5e5aaa8e: Verifying Checksum [3B[3A[2K085c5e5aaa8e: Download complete [3B[3A[2K085c5e5aaa8e: Extracting [==================================================>]  1.208kB/1.208kB[3B[3A[2K085c5e5aaa8e: Extracting [==================================================>]  1.208kB/1.208kB[3B[3A[2K085c5e5aaa8e: Pull complete [3B[2A[2K0abf9e567266: Downloading [==================================>                ]     953B/1.398kB[2B[2A[2K0abf9e567266: Downloading [==================================================>]  1.398kB/1.398kB[2B[2A[2K0abf9e567266: Verifying Checksum [2B[2A[2K0abf9e567266: Download complete [2B[2A[2K0abf9e567266: Extracting [==================================================>]  1.398kB/1.398kB[2B[2A[2K0abf9e567266: Extracting [==================================================>]  1.398kB/1.398kB[2B[2A[2K0abf9e567266: Pull complete [2B[1A[2Kde54cb821236: Downloading [>                                                  ]  173.4kB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=>                                                 ]  524.3kB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===>                                               ]  1.065MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===>                                               ]  1.245MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=====>                                             ]  1.966MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [========>                                          ]  3.047MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===========>                                       ]  3.949MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===========>                                       ]  4.129MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=============>                                     ]  4.489MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==============>                                    ]   4.85MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===============>                                   ]   5.21MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [================>                                  ]  5.571MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=================>                                 ]  6.111MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===================>                               ]  6.652MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=====================>                             ]  7.373MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=====================>                             ]  7.553MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [======================>                            ]  7.733MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [======================>                            ]  7.913MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=======================>                           ]  8.094MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [========================>                          ]  8.454MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=========================>                         ]  8.815MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==========================>                        ]  9.175MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===========================>                       ]  9.355MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [============================>                      ]  9.716MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==============================>                    ]  10.44MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==============================>                    ]  10.62MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===============================>                   ]  10.98MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [================================>                  ]  11.16MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=================================>                 ]  11.52MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==================================>                ]  11.88MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===================================>               ]  12.42MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=====================================>             ]  12.96MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [======================================>            ]  13.14MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=======================================>           ]   13.5MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [========================================>          ]  13.86MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=========================================>         ]   14.4MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==========================================>        ]  14.58MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==========================================>        ]  14.76MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===========================================>       ]  15.12MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [============================================>      ]   15.3MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=============================================>     ]  15.84MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [==============================================>    ]  16.02MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [===============================================>   ]  16.38MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [================================================>  ]  16.74MB/17.26MB[1B[1A[2Kde54cb821236: Downloading [=================================================> ]   17.1MB/17.26MB[1B[1A[2Kde54cb821236: Verifying Checksum [1B[1A[2Kde54cb821236: Download complete [1B[1A[2Kde54cb821236: Extracting [>                                                  ]  196.6kB/17.26MB[1B[1A[2Kde54cb821236: Extracting [=====>                                             ]  1.769MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [=========>                                         ]  3.342MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [==============>                                    ]  4.915MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [===================>                               ]  6.685MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [========================>                          ]  8.454MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [=============================>                     ]  10.03MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [==================================>                ]   11.8MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [======================================>            ]  13.37MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [===========================================>       ]  14.94MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [==============================================>    ]  16.12MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [=================================================> ]   17.1MB/17.26MB[1B[1A[2Kde54cb821236: Extracting [==================================================>]  17.26MB/17.26MB[1B[1A[2Kde54cb821236: Pull complete [1BDigest: sha256:8491795299c8e739b7fcc6285d531d9812ce2666e07bd3dd8db00020ad132295
-Status: Downloaded newer image for nginx:alpine
- ---> 04da2b0513cd
-Step 8/12 : COPY --from=builder /app/dist /usr/share/nginx/html
- ---> 0d600d345316
-Step 9/12 : COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
- ---> beb11875cb0c
-Step 10/12 : EXPOSE 80
- ---> Running in 1c359bd79d66
- ---> Removed intermediate container 1c359bd79d66
- ---> 50a9c19659cd
-Step 11/12 : CMD ["nginx", "-g", "daemon off;"]
- ---> Running in bf5bc6b17e36
- ---> Removed intermediate container bf5bc6b17e36
- ---> 77c541d56ba8
-Step 12/12 : LABEL com.docker.compose.image.builder=classic
- ---> Running in 08dbceb1fa89
- ---> Removed intermediate container 08dbceb1fa89
- ---> f1b1d13906c9
-Successfully built f1b1d13906c9
-Successfully tagged plagiarism-detection-frontend:latest

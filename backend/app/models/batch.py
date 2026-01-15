@@ -12,4 +12,6 @@ class Batch(Base):
     processed_docs = Column(Integer, default=0)
     status = Column(String)
     analysis_type = Column(String, default="plagiarism")  # plagiarism, ai, or both
+    ai_provider = Column(String, default="local")  # AI detection provider
+    ai_threshold = Column(Float, default=0.5)  # AI detection threshold
     created_at = Column(DateTime(timezone=True), server_default=func.now())

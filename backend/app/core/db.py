@@ -1,20 +1,26 @@
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.ext.declarative import declarative_base
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 from app.core.config import settings
-from fastapi import Depends
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from app.models.user import User
 
-engine = create_async_engine(settings.DATABASE_URL, echo=True, future=True)
-SessionLocal = sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
 
-async def get_db():
-    async with SessionLocal() as session:
+# Sync engine for legacy compatibility
+engine = create_engine(settings.DATABASE_URL.replace("+asyncpg", ""))
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Async engine for modern usage
+async_engine = create_async_engine(settings.DATABASE_URL)
+AsyncSessionLocal = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+
+
+# Dependency for FastAPI
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as session:
         yield session
 
-async def get_user_db(session: AsyncSession = Depends(get_db)):
-    yield SQLAlchemyUserDatabase(session, User)
+
+# Base for models
+Base = declarative_base()

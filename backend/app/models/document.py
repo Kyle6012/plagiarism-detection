@@ -18,5 +18,7 @@ class Document(Base):
     status = Column(String, default="queued")  # queued, processing, completed, failed
     ai_score = Column(Float, default=0.0)  # AI detection confidence score
     is_ai_generated = Column(Boolean, default=False)  # Is the text AI-generated?
+    ai_confidence = Column(Float, default=0.0)  # AI detection confidence level
+    ai_provider = Column(String)  # AI detection provider used
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

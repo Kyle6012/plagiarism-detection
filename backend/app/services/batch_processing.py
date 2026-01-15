@@ -2,12 +2,13 @@ from celery import Celery
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.models.batch import Batch
 from app.models.document import Document
 from app.models.comparison import Comparison
 from app.services.embedding import EmbeddingService
 from app.services.ai_detection import AIDetectionService
-from app.services.comparison import ComparisonService
+# from app.services.comparison import ComparisonService # Deleted
 import asyncio
 
 celery = Celery(__name__)
@@ -20,11 +21,11 @@ embedding_service = EmbeddingService()
 ai_service = AIDetectionService()
 
 @celery.task
-def process_batch(batch_id: str):
+def process_batch(batch_id: str, provider: str = "local", ai_threshold: float = 0.5):
     """Process a batch of documents for plagiarism and/or AI detection"""
-    asyncio.run(_process_batch_async(batch_id))
+    asyncio.run(_process_batch_async(batch_id, provider, ai_threshold))
 
-async def _process_batch_async(batch_id: str):
+async def _process_batch_async(batch_id: str, provider: str, ai_threshold: float):
     async with SessionLocal() as session:
         # Get batch and documents
         batch = await session.get(Batch, batch_id)
@@ -44,6 +45,10 @@ async def _process_batch_async(batch_id: str):
         
         analysis_type = batch.analysis_type or "plagiarism"  # default to plagiarism
         
+        # Instantiate PlagiarismService
+        from app.services.plagiarism import PlagiarismService
+        plagiarism_service = PlagiarismService(session)
+
         # Process each document
         for doc in documents:
             try:
@@ -51,32 +56,48 @@ async def _process_batch_async(batch_id: str):
                 await session.commit()
                 
                 # AI Detection
-                if analysis_type in ["ai", "both"]:
+                if analysis_type in ["ai", "both", "mixed"]:
                     if doc.text_content:
-                        ai_result = ai_service.detect(doc.text_content)
+                        ai_result = ai_service.detect(doc.text_content, provider=provider, threshold=ai_threshold)
                         doc.ai_score = ai_result.get("score", 0.0)
                         doc.is_ai_generated = ai_result.get("is_ai", False)
+                        doc.ai_confidence = ai_result.get("confidence", 0.0)
+                        doc.ai_provider = ai_result.get("provider", "unknown")
+                        
+                        # Store detailed AI detection result in AIDetection table
+                        from app.models.ai_detection import AIDetection
+                        ai_detection_record = AIDetection(
+                            document_id=doc.id,
+                            model_version=ai_result.get("details", {}).get("model", "unknown"),
+                            probability=ai_result.get("score", 0.0),
+                            meta_data={
+                                "provider": ai_result.get("provider", "unknown"),
+                                "confidence": ai_result.get("confidence", 0.0),
+                                "label": ai_result.get("label", "unknown"),
+                                "details": ai_result.get("details", {})
+                            }
+                        )
+                        session.add(ai_detection_record)
                 
                 # Plagiarism Detection (semantic similarity)
-                if analysis_type in ["plagiarism", "both"]:
-                    if doc.text_content and embedding_service.enabled:
-                        # Generate embedding
+                if analysis_type in ["plagiarism", "both", "mixed"]:
+                    if doc.text_content and embedding_service.model:
+                        # Generate embedding (average) for legacy compatibility/search
                         embedding = embedding_service.generate_text_embedding(doc.text_content)
                         doc.embedding = embedding
                         
-                        # Find similar documents
-                        comparison_service = ComparisonService(session)
-                        similar_results = await comparison_service.find_similar(embedding, top_k=5)
+                        # Find similar documents in batch using new PlagiarismService
+                        similar_results = await plagiarism_service.find_similar_in_batch(doc, batch_id)
                         
                         # Store comparisons
-                        for similar_doc, similarity in similar_results:
-                            if similar_doc.id != doc.id:  # Don't compare with self
-                                comparison = Comparison(
-                                    doc_a=doc.id,
-                                    doc_b=similar_doc.id,
-                                    similarity=similarity
-                                )
-                                session.add(comparison)
+                        for res in similar_results:
+                            comparison = Comparison(
+                                doc_a=doc.id,
+                                doc_b=res["document_id"],
+                                similarity=res["similarity"],
+                                matches=res.get("matches", [])  # Store detailed matches in JSONB field
+                            )
+                            session.add(comparison)
                 
                 doc.status = "completed"
                 await session.commit()

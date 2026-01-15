@@ -5,6 +5,8 @@ const AIDetectionPage = () => {
     const [result, setResult] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [provider, setProvider] = useState('local');
+    const [threshold, setThreshold] = useState(0.5);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -14,13 +16,17 @@ const AIDetectionPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/v1/ai-check', {
+            const response = await fetch('/api/v1/ai-detection', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ 
+                    text, 
+                    provider,
+                    threshold
+                }),
             });
 
             if (!response.ok) throw new Error('Analysis failed');
@@ -43,6 +49,65 @@ const AIDetectionPage = () => {
 
             <div className="glass" style={{ padding: '32px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {/* Provider Selection */}
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '12px', fontSize: '14px', fontWeight: 500 }}>AI Detection Provider</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                            {[
+                                { id: 'local', label: 'Local Model', desc: 'Free, Fast, Private' },
+                                { id: 'openai', label: 'OpenAI', desc: 'High Accuracy, Paid' },
+                                { id: 'together', label: 'Together AI', desc: 'Open Models, Fast' }
+                            ].map(p => (
+                                <label key={p.id} style={{ cursor: 'pointer' }}>
+                                    <input
+                                        type="radio"
+                                        name="provider"
+                                        value={p.id}
+                                        checked={provider === p.id}
+                                        onChange={(e) => setProvider(e.target.value)}
+                                        style={{ display: 'none' }}
+                                    />
+                                    <div className={`glass card-hover ${provider === p.id ? 'active-card' : ''}`} style={{
+                                        textAlign: 'center',
+                                        padding: '12px',
+                                        borderRadius: '12px',
+                                        transition: 'var(--transition)',
+                                        border: provider === p.id ? '2px solid var(--primary)' : '2px solid transparent'
+                                    }}>
+                                        <div style={{ fontWeight: 600, marginBottom: '4px' }}>{p.label}</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.desc}</div>
+                                    </div>
+                                </label>
+                            ))}
+                        </div>
+                        {provider !== 'local' && (
+                            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--warning)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                ⚠️ External providers may incur costs
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Threshold Slider */}
+                    <div>
+                        <label style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                            <span>Detection Sensitivity</span>
+                            <span>{Math.round(threshold * 100)}%</span>
+                        </label>
+                        <input
+                            type="range"
+                            min="0.1"
+                            max="0.9"
+                            step="0.05"
+                            value={threshold}
+                            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+                            style={{ width: '100%', accentColor: 'var(--primary)' }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '11px', color: 'var(--text-muted)' }}>
+                            <span>More Lenient</span>
+                            <span>Stricter</span>
+                        </div>
+                    </div>
+
                     <div>
                         <label style={{ display: 'block', marginBottom: '12px', fontSize: '14px', fontWeight: 500 }}>Text to Analyze</label>
                         <textarea
@@ -80,6 +145,14 @@ const AIDetectionPage = () => {
                                 <div>
                                     <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Classification</p>
                                     <p style={{ fontSize: '18px', fontWeight: 600 }}>{result.label || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Confidence</p>
+                                    <p style={{ fontSize: '16px', fontWeight: 500 }}>{result.confidence ? `${(result.confidence * 100).toFixed(1)}%` : 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Provider</p>
+                                    <p style={{ fontSize: '16px', fontWeight: 500, textTransform: 'capitalize' }}>{result.provider || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>

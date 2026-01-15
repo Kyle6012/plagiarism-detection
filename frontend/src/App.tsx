@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/AuthProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/MainLayout';
 import LandingPage from './components/LandingPage';
 import LoginPage from './components/LoginPage';
@@ -23,7 +24,7 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="upload" element={<UploadForm />} />
             <Route path="ai-check" element={<AIDetectionPage />} />
-            <Route path="admin" element={<AdminPage />} />
+            <Route path="admin" element={<ProtectedRoute requiredRole="admin"><AdminPage /></ProtectedRoute>} />
             <Route path="batch/:batchId" element={<BatchResultsPage />} />
           </Route>
         </Routes>

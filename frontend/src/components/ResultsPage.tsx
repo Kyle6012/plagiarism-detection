@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-interface Result {
-    document_name: string;
+interface PlagiarismMatch {
+    similar_document: string;
     similarity: number;
-    similar_document_name: string;
+    matches: Array<{
+        source_chunk: string;
+        target_chunk: string;
+        score: number;
+    }>;
+}
+
+interface DocumentResult {
+    document_id: string;
+    filename: string;
+    status: string;
+    ai_analysis: {
+        score: number;
+        is_ai: boolean;
+    };
+    plagiarism_analysis: PlagiarismMatch[];
 }
 
 const ResultsPage: React.FC = () => {
     const { batchId } = useParams<{ batchId: string }>();
-    const [results, setResults] = useState<Result[]>([]);
+    const [results, setResults] = useState<DocumentResult[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchResults = async () => {
@@ -19,10 +35,8 @@ const ResultsPage: React.FC = () => {
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/api/v1/batch/${batchId}/results`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                const response = await fetch(`/api/v1/batches/${batchId}/results`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
 
                 if (!response.ok) {
@@ -32,12 +46,8 @@ const ResultsPage: React.FC = () => {
 
                 const data = await response.json();
                 setResults(data.data);
-            } catch (e: unknown) {
-                if (e instanceof Error) {
-                    setError(e.message);
-                } else {
-                    setError('An unexpected error occurred');
-                }
+            } catch (e: any) {
+                setError(e.message || 'An unexpected error occurred');
             } finally {
                 setLoading(false);
             }
@@ -51,7 +61,6 @@ const ResultsPage: React.FC = () => {
             <div className="fade-in" style={{ padding: '100px 0', textAlign: 'center' }}>
                 <div className="spinner" style={{ width: '60px', height: '60px', border: '4px solid rgba(99, 102, 241, 0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto 24px' }} />
                 <h2 style={{ fontSize: '24px', fontWeight: 700 }}>Analyzing results...</h2>
-                <p style={{ color: 'var(--text-secondary)' }}>This may take a few moments.</p>
             </div>
         );
     }
@@ -59,11 +68,9 @@ const ResultsPage: React.FC = () => {
     if (error) {
         return (
             <div className="fade-in" style={{ padding: '60px 0', maxWidth: '600px', margin: '0 auto' }}>
-                <div className="glass" style={{ padding: '40px', textAlign: 'center', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                    <div style={{ fontSize: '48px', marginBottom: '20px' }}>⚠️</div>
-                    <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '12px', color: 'var(--error)' }}>Analysis Failed</h2>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>{error}</p>
-                    <button onClick={() => window.location.reload()} className="btn-primary" style={{ margin: '0 auto' }}>Try Again</button>
+                <div className="glass" style={{ padding: '40px', textAlign: 'center', border: '1px solid var(--error)' }}>
+                    <h2 style={{ color: 'var(--error)' }}>Analysis Failed</h2>
+                    <p>{error}</p>
                 </div>
             </div>
         );
@@ -71,80 +78,114 @@ const ResultsPage: React.FC = () => {
 
     return (
         <div className="fade-in" style={{ padding: '60px 0', maxWidth: '1000px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '60px' }}>
-                <h1 className="text-gradient" style={{ fontSize: '48px', fontWeight: 800, marginBottom: '12px', letterSpacing: '-0.02em' }}>
-                    Analysis Report
-                </h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '18px' }}>
-                    Batch ID: <span style={{ color: 'var(--primary)', fontWeight: 700, fontFamily: 'monospace' }}>{batchId}</span>
-                </p>
+            <div style={{ marginBottom: '40px' }}>
+                <h1 className="text-gradient" style={{ fontSize: '48px', fontWeight: 800 }}>Analysis Report</h1>
+                <p style={{ color: 'var(--text-secondary)' }}>Batch ID: {batchId}</p>
             </div>
 
-            {results.length === 0 ? (
-                <div className="glass" style={{ padding: '80px 40px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '64px', marginBottom: '24px' }}>🛡️</div>
-                    <h2 style={{ fontSize: '28px', fontWeight: 800, marginBottom: '16px' }}>All Clear!</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '18px', maxWidth: '500px', margin: '0 auto' }}>
-                        No significant similarities or AI-generated content patterns were detected in this batch.
-                    </p>
-                </div>
-            ) : (
-                <div style={{ display: 'grid', gap: '32px' }}>
-                    {results.map((result, index) => (
-                        <div key={index} className="glass card-hover" style={{ padding: '40px', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '6px',
-                                height: '100%',
-                                background: `linear-gradient(to bottom, var(--primary), var(--secondary))`
-                            }} />
+            <div style={{ display: 'grid', gap: '32px' }}>
+                {results.map((doc) => (
+                    <div key={doc.document_id} className="glass" style={{ padding: '32px', borderRadius: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <h3 style={{ fontSize: '24px', fontWeight: 700 }}>{doc.filename}</h3>
+                            <span style={{
+                                padding: '6px 12px',
+                                borderRadius: '100px',
+                                background: doc.status === 'completed' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                                color: doc.status === 'completed' ? 'var(--success)' : 'var(--error)',
+                                fontSize: '12px', fontWeight: 700
+                            }}>
+                                {doc.status.toUpperCase()}
+                            </span>
+                        </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', gap: '24px' }}>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                                        <span style={{ fontSize: '24px' }}>📄</span>
-                                        <h3 style={{ fontSize: '22px', fontWeight: 800, color: 'white' }}>{result.document_name}</h3>
-                                    </div>
-                                    <p style={{ fontSize: '16px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                                        Detected similarity with <span style={{ color: 'white', fontWeight: 600 }}>{result.similar_document_name}</span>
-                                    </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+                            {/* AI Score */}
+                            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span style={{ fontWeight: 600 }}>AI Probability</span>
+                                    <span style={{ fontWeight: 700, color: doc.ai_analysis.is_ai ? 'var(--error)' : 'var(--success)' }}>
+                                        {(doc.ai_analysis.score * 100).toFixed(1)}%
+                                    </span>
                                 </div>
-                                <div style={{ textAlign: 'right', minWidth: '120px' }}>
+                                <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '100px', overflow: 'hidden' }}>
                                     <div style={{
-                                        fontSize: '36px',
-                                        fontWeight: 800,
-                                        lineHeight: 1,
-                                        marginBottom: '8px',
-                                        color: result.similarity > 0.7 ? 'var(--error)' : result.similarity > 0.3 ? 'var(--warning)' : 'var(--success)'
-                                    }}>
-                                        {(result.similarity * 100).toFixed(1)}%
-                                    </div>
-                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                                        Match Score
-                                    </div>
+                                        width: `${doc.ai_analysis.score * 100}%`,
+                                        height: '100%',
+                                        background: doc.ai_analysis.is_ai ? 'var(--error)' : 'var(--success)',
+                                        transition: 'width 1s ease'
+                                    }} />
                                 </div>
+                                <p style={{ fontSize: '13px', marginTop: '8px', color: 'var(--text-muted)' }}>
+                                    {doc.ai_analysis.is_ai ? 'Likely AI-Generated' : 'Likely Human-Written'}
+                                </p>
                             </div>
 
-                            <div style={{ width: '100%', height: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '100px', overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
-                                <div style={{
-                                    width: `${result.similarity * 100}%`,
-                                    height: '100%',
-                                    background: `linear-gradient(to right, var(--primary), var(--secondary))`,
-                                    borderRadius: '100px',
-                                    transition: 'width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                                }} />
-                            </div>
-
-                            <div style={{ marginTop: '32px', display: 'flex', gap: '16px' }}>
-                                <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '14px' }}>View Details</button>
-                                <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '14px' }}>Download Report</button>
+                            {/* Plagiarism Score */}
+                            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span style={{ fontWeight: 600 }}>Max Plagiarism</span>
+                                    <span style={{ fontWeight: 700 }}>
+                                        {doc.plagiarism_analysis.length > 0
+                                            ? `${(Math.max(...doc.plagiarism_analysis.map(p => p.similarity)) * 100).toFixed(1)}%`
+                                            : '0%'}
+                                    </span>
+                                </div>
+                                <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '100px', overflow: 'hidden' }}>
+                                    <div style={{
+                                        width: `${doc.plagiarism_analysis.length > 0 ? Math.max(...doc.plagiarism_analysis.map(p => p.similarity)) * 100 : 0}%`,
+                                        height: '100%',
+                                        background: 'var(--warning)',
+                                        transition: 'width 1s ease'
+                                    }} />
+                                </div>
+                                <p style={{ fontSize: '13px', marginTop: '8px', color: 'var(--text-muted)' }}>
+                                    {doc.plagiarism_analysis.length} document matches found
+                                </p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            )}
+
+                        {/* Plagiarism Details */}
+                        {doc.plagiarism_analysis.length > 0 && (
+                            <div>
+                                <button
+                                    onClick={() => setExpandedDoc(expandedDoc === doc.document_id ? null : doc.document_id)}
+                                    className="btn-secondary"
+                                    style={{ width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between' }}
+                                >
+                                    <span>View Plagiarism Details</span>
+                                    <span>{expandedDoc === doc.document_id ? '▲' : '▼'}</span>
+                                </button>
+
+                                {expandedDoc === doc.document_id && (
+                                    <div style={{ marginTop: '16px', display: 'grid', gap: '16px' }}>
+                                        {doc.plagiarism_analysis.map((match, idx) => (
+                                            <div key={idx} style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                                    <span style={{ fontWeight: 600, color: 'var(--warning)' }}>Match with: {match.similar_document}</span>
+                                                    <span style={{ fontWeight: 700 }}>{(match.similarity * 100).toFixed(1)}%</span>
+                                                </div>
+                                                {match.matches && match.matches.length > 0 ? (
+                                                    <div style={{ display: 'grid', gap: '8px' }}>
+                                                        {match.matches.map((chunk, cIdx) => (
+                                                            <div key={cIdx} style={{ fontSize: '13px', background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px' }}>
+                                                                <div style={{ color: 'var(--error)', marginBottom: '4px' }}>"{chunk.source_chunk.substring(0, 100)}..."</div>
+                                                                <div style={{ color: 'var(--text-muted)' }}>Matches: "{chunk.target_chunk.substring(0, 100)}..."</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>High semantic similarity detected across document.</p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

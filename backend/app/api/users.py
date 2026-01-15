@@ -1,48 +1,70 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_users import FastAPIUsers
+from app.api.auth import fastapi_users
 from app.models.user import User
-from app.models.batch import Batch
-from app.models.document import Document
-from app.core.db import get_user_db, get_db
-from app.core.auth import auth_backend
+from app.schemas import UserRead, UserCreate, UserUpdate
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
-import uuid
+from app.core.db import get_db
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](
-    get_user_db,
-    [auth_backend],
-)
 
 router = APIRouter()
 
-from app.schemas import UserRead, UserUpdate
 
-router.include_router(
-    fastapi_users.get_users_router(UserRead, UserUpdate),
-    prefix="/users",
-    tags=["users"],
-)
+@router.get("/me", response_model=UserRead)
+async def get_current_user(user: User = Depends(fastapi_users.current_user())):
+    """Get current authenticated user"""
+    return user
 
-@router.get("/users/me/dashboard")
-async def get_user_dashboard(
-    db: Session = Depends(get_db),
-    user: User = Depends(fastapi_users.current_user())
+
+@router.get("/users/{user_id}", response_model=UserRead)
+async def get_user_by_id(
+    user_id: str,
+    current_user: User = Depends(fastapi_users.current_user()),
 ):
-    num_batches = await db.execute(
-        select(func.count(Batch.id)).where(Batch.user_id == user.id)
-    ).scalar_one()
+    """Get user by ID (admin or self only)"""
+    # Check if current user is admin or requesting own profile
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Fetch the actual user from database
+    from sqlalchemy import select
+    result = await db.execute(select(User).filter(User.id == user_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return user
 
-    num_documents = await db.execute(
+@router.get("/me/dashboard")
+async def get_user_dashboard(
+    current_user: User = Depends(fastapi_users.current_user()),
+    db: Session = Depends(get_db)
+):
+    """Get dashboard statistics for current user"""
+    from app.models import Batch, Document
+    from sqlalchemy import select, func
+    
+    # Count user's batches
+    batch_count = await db.scalar(
+        select(func.count(Batch.id)).where(Batch.user_id == current_user.id)
+    )
+    
+    # Count user's documents
+    doc_count = await db.scalar(
         select(func.count(Document.id))
         .join(Batch, Document.batch_id == Batch.id)
-        .where(Batch.user_id == user.id)
-    ).scalar_one()
-
+        .where(Batch.user_id == current_user.id)
+    )
+    
     return {
-        "status": "ok",
         "data": {
-            "num_batches": num_batches,
-            "num_documents": num_documents,
-        },
+            "num_batches": batch_count or 0,
+            "num_documents": doc_count or 0
+        }
     }
+
+
+# Include authentication routes from fastapi_users
+# These would typically be registered separately, but for now we'll define the router
+# The actual auth routes (login, register, etc.) are handled by fastapi_users

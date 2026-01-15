@@ -11,8 +11,8 @@ from app.models.batch import Batch
 class ReportService:
     """Service for generating reports (PDF, CSV)"""
 
-    @staticmethod
-    def generate_csv_report(documents: List[Document]) -> str:
+    @classmethod
+    def generate_csv_report(cls, documents: List[Document]) -> str:
         """Generate CSV report for a list of documents"""
         output = io.StringIO()
         writer = csv.writer(output)
@@ -27,10 +27,30 @@ class ReportService:
                 doc.status,
                 f"{doc.ai_score:.2f}" if doc.ai_score is not None else "N/A",
                 "Yes" if doc.is_ai_generated else "No",
-                "N/A" # Placeholder for plagiarism score if not directly on doc model
+                f"{self._calculate_plagiarism_score(doc, documents):.2f}"
             ])
             
         return output.getvalue()
+    
+    @classmethod
+    def _calculate_plagiarism_score(cls, document: Document, all_documents: List[Document]) -> float:
+        """Calculate plagiarism score based on document similarities"""
+        # In a real implementation, we would query the database for comparisons
+        # For now, we'll calculate a simple score based on document content similarities
+        if not document.text_content or len(all_documents) <= 1:
+            return 0.0
+        
+        # Calculate similarity with other documents in the batch
+        from difflib import SequenceMatcher
+        similarities = []
+        
+        for other_doc in all_documents:
+            if other_doc.id != document.id and other_doc.text_content:
+                similarity = SequenceMatcher(None, document.text_content, other_doc.text_content).ratio()
+                similarities.append(similarity)
+        
+        # Return average similarity as plagiarism score
+        return sum(similarities) / len(similarities) if similarities else 0.0
 
     @staticmethod
     def generate_pdf_report(batch: Batch, documents: List[Document]) -> bytes:

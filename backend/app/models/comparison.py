@@ -1,14 +1,16 @@
 import uuid
-from sqlalchemy import Column, Float, DateTime, func, UUID, ForeignKey
-from sqlalchemy.dialects.postgresql import JSONB
-from .base import Base
+from sqlalchemy import Column, String, Float, ForeignKey, DateTime, Integer
+from sqlalchemy.dialects.postgresql import UUID, JSON
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from app.core.db import Base
 
 class Comparison(Base):
     __tablename__ = "comparisons"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    doc_a = Column(UUID(as_uuid=True), ForeignKey("documents.id"))
-    doc_b = Column(UUID(as_uuid=True), ForeignKey("documents.id"))
-    similarity = Column(Float)
-    details = Column(JSONB)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    doc_a = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
+    doc_b = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
+    similarity = Column(Float, nullable=False)
+    matches = Column(JSON, nullable=True) # Store detailed chunk matches
+    created_at = Column(DateTime, default=datetime.utcnow)

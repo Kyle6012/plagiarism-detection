@@ -1,31 +1,44 @@
-# Use single stage build for simplicity
+# Use official Python runtime as a parent image
 FROM python:3.11-slim
 
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set work directory
 WORKDIR /app
 
-# Install system dependencies for OCR and PDF processing
-RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
-    libtesseract-dev \
-    poppler-utils \
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gcc \
+        g++ \
+        poppler-utils \
+        tesseract-ocr \
+        libtesseract-dev \
+        libleptonica-dev \
+        pkg-config \
+        ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install poetry
-RUN pip install --no-cache-dir poetry
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy dependency files
-COPY backend/pyproject.toml backend/poetry.lock ./
+# Copy project
+COPY . .
 
-# Install dependencies globally (no venv needed in container)
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-root --only main
-
-# Install additional dependencies from requirements.txt (to ensure new packages are installed)
-COPY backend/requirements.txt .
-RUN pip install --default-timeout=1000 -r requirements.txt
-
-# Copy application code
-COPY backend/ .
+# Expose port
+EXPOSE 8000
 
 # Run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Create a startup script to handle database initialization
+RUN echo '#!/bin/bash\n\n# Run database migrations and seeding first\npython -m app.core.database_seed\n\n# Then start the application\ngunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --workers 4 --worker-class uvicorn.workers.UvicornWorker --timeout 120 app.main:app' > /app/startup.sh && chmod +x /app/startup.sh
+
+# Run the application with the startup script
+CMD ["/app/startup.sh"]

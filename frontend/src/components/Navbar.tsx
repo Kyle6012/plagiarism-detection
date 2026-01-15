@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
 
   return (
     <nav className="glass fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[1200px] z-[1000] p-3 px-6 rounded-[20px] shadow-2xl" style={{
@@ -35,7 +35,9 @@ const Navbar = () => {
               <Link to="/dashboard" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Dashboard</Link>
               <Link to="/upload" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Upload</Link>
               <Link to="/ai-check" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>AI Check</Link>
-              <Link to="/admin" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Admin</Link>
+              {user && user.role === 'admin' && (
+                <Link to="/admin" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 20px', fontSize: '14px' }}>Admin</Link>
+              )}
               <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '14px', color: 'var(--error)' }} onClick={() => { logout(); window.location.href = '/'; }}>Logout</button>
             </>
           ) : (
