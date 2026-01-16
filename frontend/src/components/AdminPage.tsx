@@ -6,7 +6,6 @@ const AdminPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [newUserEmail, setNewUserEmail] = useState('');
-    const [newUserRole, setNewUserRole] = useState('user');
     const [newUserPassword, setNewUserPassword] = useState('');
     const [showCreateForm, setShowCreateForm] = useState(false);
 

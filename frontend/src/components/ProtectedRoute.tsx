@@ -9,6 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, requiredRole = 'user' }: ProtectedRouteProps) => {
   const authContext = useContext(AuthContext);
+  const location = useLocation();
   
   // Check if context exists
   if (!authContext) {
@@ -17,7 +18,6 @@ const ProtectedRoute = ({ children, requiredRole = 'user' }: ProtectedRouteProps
   }
 
   const { isAuthenticated, token } = authContext;
-  const location = useLocation();
 
   // Check if user is authenticated
   if (!isAuthenticated || !token) {
