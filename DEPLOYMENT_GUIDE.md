@@ -25,7 +25,7 @@ This guide provides comprehensive instructions for deploying the plagiarism and 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/plagiarism-detection.git
+git clone https://github.com/Kyle6012/plagiarism-detection.git
 cd plagiarism-detection
 ```
 
