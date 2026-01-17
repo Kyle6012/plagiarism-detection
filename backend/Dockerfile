@@ -11,14 +11,14 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        gcc \
-        g++ \
-        poppler-utils \
-        tesseract-ocr \
-        libtesseract-dev \
-        libleptonica-dev \
-        pkg-config \
-        ffmpeg \
+    gcc \
+    g++ \
+    poppler-utils \
+    tesseract-ocr \
+    libtesseract-dev \
+    libleptonica-dev \
+    pkg-config \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: ankane/pgvector:v0.5.1
@@ -46,8 +44,8 @@ services:
 
   api:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: plagiarism_api
     ports:
       - "8000:8000"
@@ -62,8 +60,8 @@ services:
 
   celery-worker:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: plagiarism_celery_worker
     command: celery -A app.core.celery.app worker -l info
     depends_on:
@@ -76,8 +74,8 @@ services:
 
   celery-beat:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: plagiarism_celery_beat
     command: celery -A app.core.celery.app beat -l info
     depends_on:
